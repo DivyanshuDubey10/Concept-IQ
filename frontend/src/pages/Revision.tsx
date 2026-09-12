@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import { Calendar, CheckCircle2, ArrowRight, Loader2, Sparkles, AlertCircle } from 'lucide-react'
-import { getTodayRevision, completeRevision, RevisionItem } from '../lib/api/revision'
+import { getTodayRevision, completeRevision } from '../lib/api/revision'
+import type { RevisionItem } from '../lib/api/revision'
 import { Button } from '../components/ui/button'
 import { cn } from '../lib/utils'
 import { Progress } from '../components/ui/progress'

@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import { TrendingUp, Award, ChevronRight, Loader2, AlertCircle } from 'lucide-react'
-import { getProgress, ProgressResponse } from '../lib/api/progress'
+import { getProgress } from '../lib/api/progress'
+import type { ProgressResponse } from '../lib/api/progress'
 import { Progress } from '../components/ui/progress'
 
 // Helper component for animating numbers
