@@ -1,42 +1,66 @@
 import { useState, useEffect } from 'react'
-import { Calendar, CheckCircle2, ArrowRight, Loader2, Sparkles } from 'lucide-react'
-import { dashboardData } from '../lib/mock-data'
+import { Calendar, CheckCircle2, ArrowRight, Loader2, Sparkles, AlertCircle } from 'lucide-react'
+import { getTodayRevision, completeRevision, RevisionItem } from '../lib/api/revision'
 import { Button } from '../components/ui/button'
 import { cn } from '../lib/utils'
 import { Progress } from '../components/ui/progress'
 
 export default function Revision() {
-  const [items, setItems] = useState(dashboardData.revisionData.items)
+  const [items, setItems] = useState<(RevisionItem & { completed_at?: string })[]>([])
   const [isLoadingInitial, setIsLoadingInitial] = useState(true)
-  const [processingId, setProcessingId] = useState<string | null>(null)
+  const [error, setError] = useState<string | null>(null)
+  const [processingId, setProcessingId] = useState<number | null>(null)
 
   useEffect(() => {
-    // Simulate initial data fetch
-    const t = setTimeout(() => setIsLoadingInitial(false), 800)
-    return () => clearTimeout(t)
+    async function fetchRevision() {
+      try {
+        setIsLoadingInitial(true)
+        const data = await getTodayRevision()
+        setItems(data)
+      } catch (err: any) {
+        console.error('Failed to fetch revision queue:', err)
+        setError(err.message || 'Failed to load revision queue')
+      } finally {
+        setIsLoadingInitial(false)
+      }
+    }
+    fetchRevision()
   }, [])
 
-  const handleReview = (id: string) => {
-    // Simulate navigating to practice and completing it
+  const handleReview = async (id: number) => {
     setProcessingId(id)
-    setTimeout(() => {
+    try {
+      const response = await completeRevision(id)
       setItems(prev => prev.map(item => 
-        item.id === id ? { ...item, status: 'completed' } : item
+        item.concept_id === id ? { ...item, completed_at: response.next_revision_date } : item
       ))
+    } catch (err: any) {
+      console.error('Failed to complete revision:', err)
+      // Normally we'd show a toast here
+    } finally {
       setProcessingId(null)
-    }, 1500)
+    }
   }
 
   if (isLoadingInitial) {
     return (
       <div className="flex flex-col items-center justify-center h-[60vh] space-y-4">
         <Loader2 className="w-8 h-8 text-primary animate-spin" />
-        <p className="text-text-muted animate-pulse">Loading today's revision queue...</p>
+        <p className="text-text-muted">Loading today's revision queue...</p>
       </div>
     )
   }
 
-  const allCompleted = items.length > 0 && items.every(i => i.status === 'completed')
+  if (error) {
+    return (
+      <div className="flex flex-col items-center justify-center h-[60vh] space-y-4">
+        <AlertCircle className="w-8 h-8 text-error" />
+        <p className="text-error font-medium">{error}</p>
+      </div>
+    )
+  }
+
+  const allCompleted = items.length > 0 && items.every(i => i.completed_at != null)
   const noItems = items.length === 0
 
   return (
@@ -44,10 +68,10 @@ export default function Revision() {
       
       <div className="space-y-3">
         <h1 className="text-4xl font-bold tracking-tight text-white">
-          {dashboardData.revisionData.heading}
+          Today's revision
         </h1>
         <p className="text-lg text-text-muted">
-          {dashboardData.revisionData.subtitle}
+          A few concepts worth revisiting today.
         </p>
       </div>
 
@@ -70,12 +94,12 @@ export default function Revision() {
       ) : (
         <div className="space-y-4">
           {items.map(item => {
-            const isCompleted = item.status === 'completed'
-            const isProcessing = processingId === item.id
+            const isCompleted = item.completed_at != null
+            const isProcessing = processingId === item.concept_id
 
             return (
               <div 
-                key={item.id}
+                key={item.concept_id}
                 className={cn(
                   "relative overflow-hidden border rounded-2xl p-6 transition-all duration-500",
                   isCompleted ? "bg-surface/10 border-success/20" : "bg-surface/40 border-border/50 hover:border-primary/40",
@@ -88,7 +112,7 @@ export default function Revision() {
                   <div className="space-y-4 flex-1">
                     <div>
                       <div className="text-xs font-semibold uppercase tracking-wider text-text-muted mb-1">
-                        {item.topicName}
+                        {item.topic_name || 'General'}
                       </div>
                       <h3 className={cn("text-xl font-semibold", isCompleted ? "text-white/60 line-through decoration-white/20" : "text-white")}>
                         {item.name}
@@ -97,8 +121,8 @@ export default function Revision() {
                     
                     {!isCompleted && (
                       <div className="flex items-center gap-4 w-48">
-                        <Progress value={item.mastery} className="h-1.5" />
-                        <span className="text-sm font-medium text-text-muted">{item.mastery}%</span>
+                        <Progress value={item.current_mastery} className="h-1.5" />
+                        <span className="text-sm font-medium text-text-muted">{item.current_mastery}%</span>
                       </div>
                     )}
                   </div>
@@ -112,7 +136,7 @@ export default function Revision() {
                           Revision complete
                         </div>
                         <div className="text-sm text-text-muted">
-                          Next review <span className="text-white">Tomorrow</span>
+                          Next review <span className="text-white">{item.completed_at}</span>
                         </div>
                       </>
                     ) : (
@@ -122,7 +146,7 @@ export default function Revision() {
                           Due today
                         </div>
                         <Button 
-                          onClick={() => handleReview(item.id)}
+                          onClick={() => handleReview(item.concept_id)}
                           className="group"
                           disabled={isProcessing}
                         >

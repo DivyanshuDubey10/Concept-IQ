@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
-import { TrendingUp, Award, ChevronRight } from 'lucide-react'
-import { dashboardData } from '../lib/mock-data'
+import { TrendingUp, Award, ChevronRight, Loader2, AlertCircle } from 'lucide-react'
+import { getProgress, ProgressResponse } from '../lib/api/progress'
 import { Progress } from '../components/ui/progress'
 
 // Helper component for animating numbers
@@ -35,14 +35,58 @@ function AnimatedNumber({ value, duration = 1500 }: { value: number, duration?: 
 }
 
 export default function ProgressPage() {
-  const { progressData } = dashboardData
+  const [progressData, setProgressData] = useState<ProgressResponse | null>(null)
+  const [isLoading, setIsLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
   const [isMounted, setIsMounted] = useState(false)
 
   useEffect(() => {
-    // Small delay to trigger CSS transitions after mount
-    const t = setTimeout(() => setIsMounted(true), 100)
-    return () => clearTimeout(t)
+    async function fetchProgress() {
+      try {
+        setIsLoading(true)
+        const data = await getProgress()
+        setProgressData(data)
+      } catch (err: any) {
+        console.error('Failed to fetch progress:', err)
+        setError(err.message || 'Failed to load progress data')
+      } finally {
+        setIsLoading(false)
+        setTimeout(() => setIsMounted(true), 100)
+      }
+    }
+    fetchProgress()
   }, [])
+
+  if (isLoading) {
+    return (
+      <div className="flex flex-col items-center justify-center min-h-[60vh] space-y-4">
+        <Loader2 className="w-8 h-8 text-primary animate-spin" />
+        <p className="text-text-muted">Loading progress...</p>
+      </div>
+    )
+  }
+
+  if (error || !progressData) {
+    return (
+      <div className="min-h-[60vh] flex flex-col items-center justify-center space-y-6">
+        <div className="bg-error/10 border border-error/20 rounded-xl p-6 flex flex-col items-center justify-center text-center space-y-4 max-w-md">
+          <AlertCircle className="w-8 h-8 text-error" />
+          <p className="text-error font-medium">{error || "No progress data available"}</p>
+        </div>
+      </div>
+    )
+  }
+
+  // Calculate overall mastery
+  let totalMastery = 0;
+  let conceptCount = 0;
+  progressData.topics.forEach(t => {
+    t.concepts.forEach(c => {
+      totalMastery += c.mastery;
+      conceptCount++;
+    })
+  });
+  const overallMastery = conceptCount > 0 ? Math.round(totalMastery / conceptCount) : 0;
 
   return (
     <div className="max-w-3xl mx-auto space-y-16 py-8">
@@ -54,7 +98,7 @@ export default function ProgressPage() {
         </h1>
         <div className="flex items-end gap-6">
           <div className="text-8xl md:text-9xl font-light tracking-tighter text-white">
-            <AnimatedNumber value={progressData.overallMastery} />
+            <AnimatedNumber value={overallMastery} />
             <span className="text-5xl md:text-6xl text-text-muted ml-1">%</span>
           </div>
           <div className="mb-6 h-16 w-16 rounded-full bg-primary/10 flex items-center justify-center animate-fade-in" style={{ animationDelay: '1000ms', animationFillMode: 'both' }}>
@@ -68,9 +112,8 @@ export default function ProgressPage() {
         {progressData.topics.map((topic, topicIdx) => (
           <div key={topicIdx} className="space-y-6">
             <h2 className="text-2xl font-semibold text-white tracking-tight border-b border-border/30 pb-4">
-              {topic.name}
+              {topic.topic_name}
             </h2>
-            
             <div className="space-y-2">
               {topic.concepts.map((concept, conceptIdx) => (
                 <div 
@@ -96,38 +139,6 @@ export default function ProgressPage() {
             </div>
           </div>
         ))}
-      </section>
-
-      {/* Improving Section */}
-      <section className="space-y-6 pt-8 border-t border-border/30">
-        <div className="flex items-center text-success mb-2">
-          <TrendingUp className="w-5 h-5 mr-2" />
-          <h2 className="text-lg font-medium tracking-wide uppercase">Improving</h2>
-        </div>
-        
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          {progressData.improving.map((item, idx) => (
-            <div 
-              key={idx}
-              className="bg-gradient-to-br from-success/10 to-transparent border border-success/20 rounded-2xl p-6 relative overflow-hidden group hover:border-success/40 transition-colors"
-            >
-              <h3 className="text-xl font-semibold text-white mb-6">
-                {item.name}
-              </h3>
-              
-              <div className="flex items-center gap-4 text-3xl font-light text-white">
-                <span className="text-text-muted">{item.previousMastery}%</span>
-                <ChevronRight className="w-6 h-6 text-success/50" />
-                <span className="text-success font-medium">
-                  {isMounted ? <AnimatedNumber value={item.currentMastery} duration={2000} /> : item.previousMastery}%
-                </span>
-              </div>
-              
-              {/* Subtle visual flair */}
-              <div className="absolute -bottom-6 -right-6 w-24 h-24 bg-success/20 rounded-full blur-[30px] group-hover:scale-150 transition-transform duration-700" />
-            </div>
-          ))}
-        </div>
       </section>
 
     </div>
