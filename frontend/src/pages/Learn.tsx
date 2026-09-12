@@ -1,18 +1,37 @@
-import { useState } from 'react'
-import { Search, Play, ArrowRight } from 'lucide-react'
+import { useState, useEffect } from 'react'
+import { Search, Play, ArrowRight, Loader2, AlertCircle } from 'lucide-react'
 import { Link } from 'react-router-dom'
-import { dashboardData } from '../lib/mock-data'
+import { getTopics, Topic } from '../lib/api/topics'
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '../components/ui/card'
 import { Button } from '../components/ui/button'
 import { Progress } from '../components/ui/progress'
+import { cn } from '../lib/utils'
 
 export default function Learn() {
+  const [topics, setTopics] = useState<Topic[]>([])
+  const [isLoading, setIsLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
   const [searchQuery, setSearchQuery] = useState('')
-  const { topics } = dashboardData
+
+  useEffect(() => {
+    const fetchTopics = async () => {
+      try {
+        setIsLoading(true)
+        const data = await getTopics()
+        setTopics(data)
+      } catch (err) {
+        console.error('Failed to fetch topics:', err)
+        setError('Failed to load topics. Please try again.')
+      } finally {
+        setIsLoading(false)
+      }
+    }
+    fetchTopics()
+  }, [])
 
   const filteredTopics = topics.filter(topic => 
     topic.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    topic.description.toLowerCase().includes(searchQuery.toLowerCase())
+    (topic.description && topic.description.toLowerCase().includes(searchQuery.toLowerCase()))
   )
 
   return (
@@ -41,56 +60,51 @@ export default function Learn() {
       </div>
 
       {/* Topics Grid */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        {filteredTopics.map((topic) => (
-          <Card 
-            key={topic.id} 
-            className="group hover:border-primary/50 hover:shadow-premium-hover transition-all duration-300 flex flex-col"
-          >
-            <CardHeader>
-              <CardTitle className="text-2xl">{topic.name}</CardTitle>
-              <CardDescription className="text-base line-clamp-2">
-                {topic.description}
-              </CardDescription>
-            </CardHeader>
-            
-            <CardContent className="flex-1 space-y-4">
-              {topic.mastery > 0 ? (
-                <div className="space-y-2">
-                  <div className="flex justify-between text-sm font-medium">
-                    <span className="text-text-muted">Mastery</span>
-                    <span className="text-white">{topic.mastery}%</span>
-                  </div>
-                  <Progress value={topic.mastery} indicatorClassName="bg-primary" />
-                </div>
-              ) : (
-                <div className="h-[28px] flex items-end">
-                  <span className="text-sm font-medium text-text-muted">Not started</span>
-                </div>
-              )}
-            </CardContent>
-
-            <CardFooter className="pt-0">
-              <Link to={`/topic/${topic.id}`} className="w-full sm:w-auto">
-                <Button 
-                  variant={topic.status === 'continue' ? 'default' : 'secondary'} 
-                  className="w-full"
-                >
-                  {topic.status === 'continue' ? (
-                    <>Continue <Play className="ml-2 w-4 h-4 fill-current" /></>
-                  ) : (
-                    <>Start topic <ArrowRight className="ml-2 w-4 h-4" /></>
-                  )}
-                </Button>
-              </Link>
-            </CardFooter>
-          </Card>
-        ))}
-      </div>
-      
-      {filteredTopics.length === 0 && (
+      {isLoading ? (
+        <div className="flex flex-col items-center justify-center py-20 space-y-4">
+          <Loader2 className="w-8 h-8 text-primary animate-spin" />
+          <p className="text-text-muted">Loading topics...</p>
+        </div>
+      ) : error ? (
+        <div className="bg-error/10 border border-error/20 rounded-xl p-6 flex flex-col items-center justify-center text-center space-y-4">
+          <AlertCircle className="w-8 h-8 text-error" />
+          <p className="text-error font-medium">{error}</p>
+        </div>
+      ) : filteredTopics.length === 0 ? (
         <div className="text-center py-20 px-6 border border-dashed border-border rounded-2xl">
-          <p className="text-lg text-text-muted">No topics found matching "{searchQuery}".</p>
+          <p className="text-lg text-text-muted">
+            {topics.length === 0 ? "No topics available at the moment." : `No topics found matching "${searchQuery}".`}
+          </p>
+        </div>
+      ) : (
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          {filteredTopics.map((topic) => (
+            <Card 
+              key={topic.topic_id} 
+              className="group hover:border-primary/50 hover:shadow-premium-hover transition-all duration-300 flex flex-col"
+            >
+              <CardHeader>
+                <CardTitle className="text-2xl">{topic.name}</CardTitle>
+                <CardDescription className="text-base line-clamp-2">
+                  {topic.description}
+                </CardDescription>
+              </CardHeader>
+              
+              <CardContent className="flex-1 space-y-4">
+                <div className="text-sm font-medium text-text-muted">
+                  Ready to practice
+                </div>
+              </CardContent>
+
+              <CardFooter className="pt-0">
+                <Link to={`/topic/${topic.topic_id}`} className="w-full sm:w-auto">
+                  <Button variant="default" className="w-full">
+                    Start topic <ArrowRight className="ml-2 w-4 h-4" />
+                  </Button>
+                </Link>
+              </CardFooter>
+            </Card>
+          ))}
         </div>
       )}
 
