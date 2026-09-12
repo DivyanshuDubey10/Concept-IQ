@@ -18,12 +18,12 @@ function App() {
         <Route path="/learn" element={<Learn />} />
         <Route path="/topic/:topicId" element={<TopicDetail />} />
         <Route path="/analysis/:topicId" element={<ConceptAnalysis />} />
-        <Route path="/practice" element={<Practice />} />
         <Route path="/ai-tutor" element={<AITutor />} />
         <Route path="/progress" element={<Progress />} />
         <Route path="/revision" element={<Revision />} />
       </Route>
       <Route path="/quiz/:quizId" element={<Quiz />} />
+      <Route path="/practice" element={<Practice />} />
     </Routes>
   )
 }

@@ -117,5 +117,51 @@ export const dashboardData = {
     nextSteps: {
       message: "Let's strengthen your understanding of Base Cases."
     }
+  },
+  adaptivePracticeData: {
+    topicName: "Recursion",
+    conceptName: "Base Cases",
+    initialMastery: 32,
+    questions: [
+      {
+        id: "p1",
+        difficulty: "Easy",
+        text: "What happens if a recursive function does not have a base case?",
+        options: [
+          { id: "o1", text: "The function will run exactly once" },
+          { id: "o2", text: "The function will cause a compilation error" },
+          { id: "o3", text: "The function will recurse infinitely until stack overflow" },
+          { id: "o4", text: "The function will automatically return null" }
+        ],
+        correctOptionId: "o3",
+        explanation: "Without a base case, there is no stopping condition, leading to infinite recursion."
+      },
+      {
+        id: "p2",
+        difficulty: "Medium",
+        text: "In a recursive function calculating factorial(n), what is the standard base case?",
+        options: [
+          { id: "o1", text: "if (n == 0) return 0" },
+          { id: "o2", text: "if (n <= 1) return 1" },
+          { id: "o3", text: "if (n == -1) return 1" },
+          { id: "o4", text: "if (n == 1) return n * 1" }
+        ],
+        correctOptionId: "o2",
+        explanation: "The factorial of 0 and 1 is 1, providing a solid base case to stop."
+      },
+      {
+        id: "p3",
+        difficulty: "Hard",
+        text: "Which of the following is true regarding tail recursion base cases?",
+        options: [
+          { id: "o1", text: "Tail recursion does not require a base case" },
+          { id: "o2", text: "The base case must return a function pointer" },
+          { id: "o3", text: "The base case typically returns the accumulated parameter" },
+          { id: "o4", text: "Tail recursion requires two distinct base cases" }
+        ],
+        correctOptionId: "o3",
+        explanation: "In tail recursion, the accumulator holds the final result, which is returned by the base case."
+      }
+    ]
   }
 };
