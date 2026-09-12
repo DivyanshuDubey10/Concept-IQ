@@ -184,5 +184,27 @@ export const dashboardData = {
         currentMastery: 68
       }
     ]
+  },
+  revisionData: {
+    heading: "Today's revision",
+    subtitle: "A few concepts worth revisiting today.",
+    items: [
+      {
+        id: "r1",
+        conceptId: "c1",
+        name: "Base Cases",
+        topicName: "Python",
+        mastery: 32,
+        status: "due" // 'due' | 'completed'
+      },
+      {
+        id: "r2",
+        conceptId: "c2",
+        name: "Recursive Calls",
+        topicName: "Python",
+        mastery: 78,
+        status: "due"
+      }
+    ]
   }
 };
