@@ -6,6 +6,7 @@ import Practice from './pages/Practice'
 import AITutor from './pages/AITutor'
 import Progress from './pages/Progress'
 import Revision from './pages/Revision'
+import TopicDetail from './pages/TopicDetail'
 
 function App() {
   return (
@@ -13,6 +14,7 @@ function App() {
       <Route element={<Shell />}>
         <Route path="/" element={<Home />} />
         <Route path="/learn" element={<Learn />} />
+        <Route path="/topic/:topicId" element={<TopicDetail />} />
         <Route path="/practice" element={<Practice />} />
         <Route path="/ai-tutor" element={<AITutor />} />
         <Route path="/progress" element={<Progress />} />

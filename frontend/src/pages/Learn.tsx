@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { Search, Play, ArrowRight } from 'lucide-react'
+import { Link } from 'react-router-dom'
 import { dashboardData } from '../lib/mock-data'
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '../components/ui/card'
 import { Button } from '../components/ui/button'
@@ -70,16 +71,18 @@ export default function Learn() {
             </CardContent>
 
             <CardFooter className="pt-0">
-              <Button 
-                variant={topic.status === 'continue' ? 'default' : 'secondary'} 
-                className="w-full sm:w-auto"
-              >
-                {topic.status === 'continue' ? (
-                  <>Continue <Play className="ml-2 w-4 h-4 fill-current" /></>
-                ) : (
-                  <>Start topic <ArrowRight className="ml-2 w-4 h-4" /></>
-                )}
-              </Button>
+              <Link to={`/topic/${topic.id}`} className="w-full sm:w-auto">
+                <Button 
+                  variant={topic.status === 'continue' ? 'default' : 'secondary'} 
+                  className="w-full"
+                >
+                  {topic.status === 'continue' ? (
+                    <>Continue <Play className="ml-2 w-4 h-4 fill-current" /></>
+                  ) : (
+                    <>Start topic <ArrowRight className="ml-2 w-4 h-4" /></>
+                  )}
+                </Button>
+              </Link>
             </CardFooter>
           </Card>
         ))}

@@ -56,5 +56,20 @@ export const dashboardData = {
       mastery: 0,
       status: "start"
     }
-  ]
+  ],
+  topicDetail: {
+    id: 't1',
+    name: "Python",
+    mastery: 82,
+    message: "You're strong in most Python fundamentals. A few concepts need attention.",
+    concepts: [
+      { id: 'c1', name: "Recursion", mastery: 58 },
+      { id: 'c2', name: "Functions", mastery: 86 },
+      { id: 'c3', name: "OOP", mastery: 81 },
+      { id: 'c4', name: "Data Structures", mastery: 74 }
+    ],
+    recommendedNext: {
+      action: "Strengthen Recursion"
+    }
+  }
 };
