@@ -1,4 +1,4 @@
-import { Routes, Route } from 'react-router-dom'
+import { Routes, Route, Navigate } from 'react-router-dom'
 import { Shell } from './components/layout/Shell'
 import Home from './pages/Home'
 import Learn from './pages/Learn'
@@ -11,11 +11,31 @@ import Quiz from './pages/Quiz'
 import ConceptAnalysis from './pages/ConceptAnalysis'
 import Login from './pages/Login'
 import Signup from './pages/Signup'
+import { useAuth } from './lib/contexts/AuthContext'
+import { Loader2 } from 'lucide-react'
+
+function ProtectedRoute({ children }: { children: React.ReactNode }) {
+  const { user, isLoading } = useAuth()
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <Loader2 className="w-8 h-8 text-primary animate-spin" />
+      </div>
+    )
+  }
+
+  if (!user) {
+    return <Navigate to="/login" replace />
+  }
+
+  return <>{children}</>
+}
 
 function App() {
   return (
     <Routes>
-      <Route element={<Shell />}>
+      <Route element={<ProtectedRoute><Shell /></ProtectedRoute>}>
         <Route path="/" element={<Home />} />
         <Route path="/learn" element={<Learn />} />
         <Route path="/topic/:topicId" element={<TopicDetail />} />
@@ -24,8 +44,8 @@ function App() {
         <Route path="/progress" element={<Progress />} />
         <Route path="/revision" element={<Revision />} />
       </Route>
-      <Route path="/quiz/:quizId" element={<Quiz />} />
-      <Route path="/practice" element={<Practice />} />
+      <Route path="/quiz/:quizId" element={<ProtectedRoute><Quiz /></ProtectedRoute>} />
+      <Route path="/practice" element={<ProtectedRoute><Practice /></ProtectedRoute>} />
       <Route path="/login" element={<Login />} />
       <Route path="/signup" element={<Signup />} />
     </Routes>

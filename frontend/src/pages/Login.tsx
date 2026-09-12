@@ -28,7 +28,9 @@ export default function Login() {
       setErrorMessage('')
       
       const response = await login(email, password)
-      console.log('Logged in:', response.user)
+      
+      // Store token
+      localStorage.setItem('conceptiq_token', response.access_token)
       
       setStatus('success')
       // Small delay before redirecting to allow user to see success state

@@ -43,7 +43,9 @@ export default function Signup() {
       setErrorMessage('')
       
       const response = await register(name, email, password)
-      console.log('Registered:', response.user)
+      
+      // Store token
+      localStorage.setItem('conceptiq_token', response.access_token)
       
       setStatus('success')
       // Small delay before redirecting
