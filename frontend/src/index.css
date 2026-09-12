@@ -72,7 +72,7 @@
   border-radius: 16px;
   width: 768px;
   max-width: 100%;
-  min-height: 520px;
+  min-height: 580px;
 }
 
 /* Both forms live at position:absolute, width:50%, left:0 */
@@ -85,6 +85,8 @@
   display: flex;
   align-items: center;
   justify-content: center;
+  /* Solid background so forms don't bleed through each other */
+  background-color: hsl(220 25% 10%);
 }
 
 /* Sign-in sits on top (z-index:2) by default */
