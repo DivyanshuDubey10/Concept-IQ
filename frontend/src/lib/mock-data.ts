@@ -163,5 +163,26 @@ export const dashboardData = {
         explanation: "In tail recursion, the accumulator holds the final result, which is returned by the base case."
       }
     ]
+  },
+  progressData: {
+    overallMastery: 68,
+    topics: [
+      {
+        name: "Python",
+        concepts: [
+          { name: "Recursion", mastery: 58 },
+          { name: "Functions", mastery: 86 },
+          { name: "OOP", mastery: 81 },
+          { name: "Data Structures", mastery: 74 }
+        ]
+      }
+    ],
+    improving: [
+      {
+        name: "Base Cases",
+        previousMastery: 32,
+        currentMastery: 68
+      }
+    ]
   }
 };
