@@ -56,8 +56,8 @@ export default function Quiz() {
         <p className="text-text-muted text-lg max-w-md">
           Great job! Your mastery metrics have been updated based on your performance.
         </p>
-        <Button onClick={() => navigate('/learn')} className="mt-8 px-8">
-          Return to Library
+        <Button onClick={() => navigate('/analysis/t1')} className="mt-8 px-8 group">
+          View Analysis <ArrowRight className="ml-2 w-4 h-4 transition-transform group-hover:translate-x-1" />
         </Button>
       </div>
     )

@@ -101,5 +101,21 @@ export const dashboardData = {
         explanation: "Trees and graphs are naturally recursive data structures, making recursive traversal algorithms (like DFS) highly elegant and suitable."
       }
     ]
+  },
+  conceptAnalysis: {
+    heading: "Here's what we found.",
+    message: "You understand most of Recursion, but Base Cases needs attention.",
+    primaryConcept: {
+      name: "Base Cases",
+      mastery: 32,
+      status: "Needs practice"
+    },
+    supportingConcepts: [
+      { name: "Recursive Calls", mastery: 78 },
+      { name: "Call Stack", mastery: 65 }
+    ],
+    nextSteps: {
+      message: "Let's strengthen your understanding of Base Cases."
+    }
   }
 };

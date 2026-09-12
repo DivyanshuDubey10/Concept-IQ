@@ -8,6 +8,7 @@ import Progress from './pages/Progress'
 import Revision from './pages/Revision'
 import TopicDetail from './pages/TopicDetail'
 import Quiz from './pages/Quiz'
+import ConceptAnalysis from './pages/ConceptAnalysis'
 
 function App() {
   return (
@@ -16,6 +17,7 @@ function App() {
         <Route path="/" element={<Home />} />
         <Route path="/learn" element={<Learn />} />
         <Route path="/topic/:topicId" element={<TopicDetail />} />
+        <Route path="/analysis/:topicId" element={<ConceptAnalysis />} />
         <Route path="/practice" element={<Practice />} />
         <Route path="/ai-tutor" element={<AITutor />} />
         <Route path="/progress" element={<Progress />} />
