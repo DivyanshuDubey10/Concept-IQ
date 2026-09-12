@@ -28,7 +28,7 @@ Our primary differentiator is the Adaptive Question Engine and the complete lear
     *   **AI Engine:** LLM API (Question generation, personalized explanations, answer evaluation)
     *   **Adaptive Engine:** Rule-based difficulty adjustment and concept selection
     *   **ML Engine (Experimental):** scikit-learn (Mastery prediction models based on attempt history, time since revision, and performance trends)
-*   **Data Layer:** SQLite (MVP) / PostgreSQL (Future)
+*   **Data Layer:** PostgreSQL
 
 ## 4. The Demo Narrative
 

@@ -12,7 +12,7 @@ ConceptIQ utilizes stateless JSON Web Tokens (JWT) to manage user sessions secur
 
 ## 2. Data Protection
 
-*   **Storage:** The MVP utilizes SQLite. The database file is restricted at the OS level on the deployment server. The schema is designed for a seamless migration to PostgreSQL, which will introduce robust role-based access control (RBAC).
+*   **Storage:** The MVP utilizes PostgreSQL, which provides robust role-based access control (RBAC) and data isolation.
 *   **Data in Transit:** All communication between the React frontend, the FastAPI backend, and the external LLM APIs must occur over HTTPS (TLS/SSL) to prevent interception of credentials, tokens, or personal learning data.
 
 ## 3. Application Security

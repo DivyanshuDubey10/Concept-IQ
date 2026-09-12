@@ -1,6 +1,6 @@
 # 06. Database Design
 
-This document outlines the relational database schema for the ConceptIQ MVP. The database is designed for SQLite initially (to facilitate rapid hackathon development), but uses standard relational patterns to allow seamless migration to PostgreSQL if required later.
+This document outlines the relational database schema for the ConceptIQ MVP. The database is designed for PostgreSQL as the primary data store.
 
 ## 1. Entity Relationship Diagram (ERD)
 

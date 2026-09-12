@@ -5,7 +5,7 @@ This document outlines the testing strategy for the ConceptIQ MVP. Given the con
 ## 1. Testing Strategy
 
 *   **Unit Testing (Backend):** Focused exclusively on the intelligence logic (Mastery calculation math, Adaptive state machine rules).
-*   **Integration Testing:** Focused on API endpoints and their interaction with the SQLite database.
+*   **Integration Testing:** Focused on API endpoints and their interaction with the PostgreSQL database.
 *   **Manual End-to-End (E2E) Testing:** Validating the complete student user journey in the React frontend.
 
 ## 2. Core Functional Test Scenarios

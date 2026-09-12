@@ -13,7 +13,7 @@ Developer 1 owns the entire user-facing experience and the core backend plumbing
 *   **UX Polish:** Ensuring mobile responsiveness, implementing loading skeletons, handling error states gracefully, and maintaining basic accessibility standards.
 
 ### 2. Application Backend (Python + FastAPI)
-*   **Infrastructure:** Structuring the FastAPI app and managing database connections (SQLite).
+*   **Infrastructure:** Structuring the FastAPI app and managing database connections (PostgreSQL).
 *   **Authentication:** Implementing the JWT generation, hashing, and route protection middleware.
 *   **API Endpoints:** Developing and maintaining all RESTful routes defined in the API Specification (`/api/auth`, `/api/users`, `/api/topics`, `/api/quizzes`, `/api/progress`, `/api/revision`).
 *   **Integration:** Invoking Developer 2's Intelligence modules from within the route controllers (specifically during the `/api/quizzes/{quiz_id}/submit` workflow).
@@ -45,7 +45,7 @@ Developer 2 owns the proprietary "brain" of ConceptIQ. They are completely decou
 
 ## Shared Backend Responsibility: Database & ORM
 
-The SQLite/PostgreSQL database schema and ORM implementation is a coordinated responsibility between both developers, sitting at the intersection of application state and learning intelligence.
+The PostgreSQL database schema and ORM implementation is a coordinated responsibility between both developers, sitting at the intersection of application state and learning intelligence.
 
 *   **Developer 1** manages the database connection lifecycle within the FastAPI app and handles standard CRUD data persistence (users, profile, topics).
 *   **Developer 2** defines the schema requirements for complex analytical data (mastery tracking, quiz sessions) and authors the complex read queries necessary for the adaptive engine.

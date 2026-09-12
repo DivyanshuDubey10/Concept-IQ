@@ -25,7 +25,7 @@ graph TD
             MLE[ML Engine<br/>Experimental]
         end
         
-        DB[(Relational Database<br/>SQLite)]
+        DB[(Relational Database<br/>PostgreSQL)]
     end
     
     LLM[External LLM API]
@@ -63,7 +63,7 @@ This decoupled layer (owned by Developer 2) contains the proprietary logic that 
 
 ### 2.4. Data Layer
 A relational database ensuring data integrity for structured learning content and user progress.
-*   **Stack:** SQLite (Selected for zero-configuration hackathon MVP deployment).
+*   **Stack:** PostgreSQL (Selected for robust, production-ready data management and scalability).
 *   **Responsibilities:** Persisting `users`, `topics` (and their child `concepts`), `questions`, `quiz_sessions`, and granular mastery tracking.
 
 ## 3. System Data Flow: The Adaptive Loop
