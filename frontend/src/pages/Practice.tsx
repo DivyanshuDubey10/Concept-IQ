@@ -1,60 +1,125 @@
-import { useState } from 'react'
-import { useNavigate } from 'react-router-dom'
-import { X, CheckCircle2, XCircle, ArrowRight, TrendingUp, TrendingDown, Activity } from 'lucide-react'
-import { dashboardData } from '../lib/mock-data'
+import { useState, useEffect } from 'react'
+import { useNavigate, useSearchParams } from 'react-router-dom'
+import { CheckCircle2, XCircle, ArrowRight, TrendingDown, Activity, Loader2, AlertCircle } from 'lucide-react'
+import { startQuiz, submitQuizAnswer, QuizQuestion, QuizSubmitResponse } from '../lib/api/quizzes'
 import { Button } from '../components/ui/button'
 import { Progress } from '../components/ui/progress'
 import { cn } from '../lib/utils'
 
 export default function Practice() {
   const navigate = useNavigate()
-  const { adaptivePracticeData } = dashboardData
+  const [searchParams] = useSearchParams()
+  const topicIdParam = searchParams.get('topicId')
+  const conceptIdParam = searchParams.get('conceptId')
   
-  const [currentIndex, setCurrentIndex] = useState(0)
-  const [selectedOptionId, setSelectedOptionId] = useState<string | null>(null)
-  const [hasSubmitted, setHasSubmitted] = useState(false)
+  const [realQuizId, setRealQuizId] = useState<string | null>(null)
+  const [currentQuestion, setCurrentQuestion] = useState<QuizQuestion | null>(null)
+  const [isLoading, setIsLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
+  
+  const [selectedOptionId, setSelectedOptionId] = useState<number | null>(null)
+  
+  const [isSubmitting, setIsSubmitting] = useState(false)
+  const [submitResult, setSubmitResult] = useState<QuizSubmitResponse | null>(null)
+  
   const [isCompleted, setIsCompleted] = useState(false)
-  const [mastery, setMastery] = useState(adaptivePracticeData.initialMastery)
   const [animateKey, setAnimateKey] = useState(0)
 
-  const question = adaptivePracticeData.questions[currentIndex]
-  const isCorrect = selectedOptionId === question?.correctOptionId
-  const hasMoreQuestions = currentIndex < adaptivePracticeData.questions.length - 1
+  // Track conceptual mastery dynamically
+  const [mastery, setMastery] = useState(0)
+  const [conceptName, setConceptName] = useState("Adaptive Practice")
 
-  const handleSelect = (id: string) => {
-    if (!hasSubmitted) {
+  useEffect(() => {
+    async function initPractice() {
+      if (!topicIdParam) {
+        setError('Missing topic ID to start practice.')
+        setIsLoading(false)
+        return
+      }
+      try {
+        setIsLoading(true)
+        const topicId = parseInt(topicIdParam, 10)
+        const conceptId = conceptIdParam ? parseInt(conceptIdParam, 10) : undefined
+        
+        const data = await startQuiz(topicId, conceptId)
+        setRealQuizId(data.quiz_id)
+        setCurrentQuestion(data.first_question)
+      } catch (err: any) {
+        console.error('Failed to start practice:', err)
+        setError(err.message || 'Failed to start practice session')
+      } finally {
+        setIsLoading(false)
+      }
+    }
+    initPractice()
+  }, [topicIdParam, conceptIdParam])
+
+  const hasSubmitted = submitResult !== null
+  const isCorrect = submitResult?.is_correct
+  const correctOptionId = submitResult?.correct_option_id
+  const hasMoreQuestions = !submitResult?.is_completed && submitResult?.next_question != null
+
+  const handleSelect = (id: number) => {
+    if (!hasSubmitted && !isSubmitting) {
       setSelectedOptionId(id)
     }
   }
 
-  const handleSubmit = () => {
-    if (!selectedOptionId) return
-    setHasSubmitted(true)
-    
-    // Simulate algorithm: increase/decrease mastery visually
-    if (selectedOptionId === question.correctOptionId) {
-      setMastery(prev => Math.min(prev + 12, 100))
-    } else {
-      setMastery(prev => Math.max(prev - 5, 0))
+  const handleSubmit = async () => {
+    if (!selectedOptionId || !realQuizId || !currentQuestion) return
+    try {
+      setIsSubmitting(true)
+      const result = await submitQuizAnswer(realQuizId, currentQuestion.question_id, selectedOptionId)
+      setSubmitResult(result)
+      
+      // Update mastery organically
+      if (result.concept_tested) {
+        setMastery(result.concept_tested.new_mastery_percentage)
+        setConceptName(result.concept_tested.name)
+      }
+    } catch (err: any) {
+      console.error('Failed to submit answer:', err)
+    } finally {
+      setIsSubmitting(false)
     }
   }
 
   const handleNext = () => {
-    if (hasMoreQuestions) {
-      setHasSubmitted(false)
-      setSelectedOptionId(null)
-      setCurrentIndex(prev => prev + 1)
-      setAnimateKey(prev => prev + 1)
-    } else {
+    if (submitResult?.is_completed || !submitResult?.next_question) {
       setIsCompleted(true)
+    } else {
+      setSubmitResult(null)
+      setSelectedOptionId(null)
+      setCurrentQuestion(submitResult.next_question)
+      setAnimateKey(prev => prev + 1)
     }
   }
 
   const handleExit = () => {
-    navigate('/analysis/t1')
+    navigate('/progress')
   }
 
-  if (isCompleted || !question) {
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-background flex flex-col items-center justify-center p-6 space-y-4">
+        <Loader2 className="w-8 h-8 text-primary animate-spin" />
+        <p className="text-text-muted">Initializing adaptive practice...</p>
+      </div>
+    )
+  }
+
+  if (error || !currentQuestion) {
+    return (
+      <div className="min-h-screen bg-background flex flex-col items-center justify-center p-6 space-y-6 text-center">
+        <AlertCircle className="w-12 h-12 text-error" />
+        <h2 className="text-2xl font-bold text-white">Could not load session</h2>
+        <p className="text-text-muted max-w-md">{error}</p>
+        <Button onClick={() => navigate('/learn')} variant="outline">Back to Library</Button>
+      </div>
+    )
+  }
+
+  if (isCompleted) {
     return (
       <div className="min-h-screen bg-background flex flex-col items-center justify-center p-6 animate-fade-in text-center space-y-8">
         <div className="w-24 h-24 bg-primary/10 text-primary rounded-full flex items-center justify-center mb-2">
@@ -75,13 +140,15 @@ export default function Practice() {
 
   // Difficulty colors
   const difficultyColors = {
-    Easy: "text-success bg-success/10",
-    Medium: "text-warning bg-warning/10",
-    Hard: "text-error bg-error/10"
+    1: "text-success bg-success/10", // Easy
+    2: "text-warning bg-warning/10", // Medium
+    3: "text-error bg-error/10"      // Hard
   }
   
   // Next difficulty prediction (for UI feedback only)
-  const nextDifficulty = hasMoreQuestions ? adaptivePracticeData.questions[currentIndex + 1].difficulty : question.difficulty
+  const nextDifficulty = hasMoreQuestions && submitResult?.next_question 
+    ? submitResult.next_question.difficulty 
+    : currentQuestion.difficulty
 
   return (
     <div className="min-h-screen bg-background flex flex-col">
@@ -89,7 +156,7 @@ export default function Practice() {
       <header className="px-6 py-5 flex items-center justify-between border-b border-border/50 bg-surface/30 backdrop-blur-md sticky top-0 z-40">
         <div className="flex items-center space-x-6">
           <div className="text-white font-medium text-lg">
-            {adaptivePracticeData.conceptName}
+            {conceptName}
           </div>
           <div className="hidden sm:flex items-center gap-3 pl-6 border-l border-border/50">
             <span className="text-text-muted text-sm font-medium uppercase tracking-widest">Mastery</span>
@@ -118,19 +185,19 @@ export default function Practice() {
           <div className="flex items-center space-x-3">
             <span className="text-sm font-semibold text-text-muted uppercase tracking-widest">Difficulty</span>
             <span className="text-text-muted opacity-50">·</span>
-            <span className={cn("text-xs font-bold uppercase tracking-wider px-2 py-1 rounded-md", difficultyColors[question.difficulty as keyof typeof difficultyColors])}>
-              {question.difficulty}
+            <span className={cn("text-xs font-bold uppercase tracking-wider px-2 py-1 rounded-md", difficultyColors[(currentQuestion.difficulty || 1) as keyof typeof difficultyColors])}>
+              {currentQuestion.difficulty === 1 ? 'Easy' : currentQuestion.difficulty === 2 ? 'Medium' : 'Hard'}
             </span>
           </div>
 
           <h2 className="text-3xl md:text-4xl font-semibold text-white leading-tight">
-            {question.text}
+            {currentQuestion.text}
           </h2>
 
           <div className="space-y-4 pt-4">
-            {question.options.map(option => {
+            {currentQuestion.options.map(option => {
               const isSelected = selectedOptionId === option.id
-              const isCorrectAnswer = option.id === question.correctOptionId
+              const isCorrectAnswer = option.id === correctOptionId
               
               let stateClass = "border-border/50 bg-surface/30 hover:border-primary/50 hover:bg-surface"
               let icon = null
@@ -153,11 +220,11 @@ export default function Practice() {
                 <button
                   key={option.id}
                   onClick={() => handleSelect(option.id)}
-                  disabled={hasSubmitted}
+                  disabled={hasSubmitted || isSubmitting}
                   className={cn(
                     "w-full text-left p-6 rounded-xl border-2 transition-all duration-300 flex items-center text-lg",
                     stateClass,
-                    !hasSubmitted && "cursor-pointer"
+                    !hasSubmitted && !isSubmitting && "cursor-pointer"
                   )}
                 >
                   <span className={cn("font-medium", hasSubmitted && isCorrectAnswer ? "text-success" : "text-white")}>
@@ -170,7 +237,7 @@ export default function Practice() {
           </div>
 
           {/* Adaptive Feedback */}
-          {hasSubmitted && (
+          {hasSubmitted && submitResult && (
             <div className="pt-8 animate-slide-up space-y-6">
               
               {/* Algorithm Explanation */}
@@ -184,23 +251,23 @@ export default function Practice() {
                     {isCorrect ? "Correct" : "Not quite"}
                   </div>
                   <p className="text-white/80 leading-relaxed text-lg">
-                    {question.explanation}
+                    {submitResult.ai_explanation}
                   </p>
                 </div>
                 
                 {/* Visualizing the transition */}
-                {hasMoreQuestions && (
+                {hasMoreQuestions && nextDifficulty && (
                   <div className="bg-background/80 backdrop-blur rounded-lg p-4 border border-border/50 min-w-[200px]">
                     <div className="text-sm font-medium text-text-muted mb-2">
                       {isCorrect ? "You're ready for something harder." : "Let's try one at the next level."}
                     </div>
                     <div className="flex items-center gap-3 font-semibold text-sm">
-                      <span className={difficultyColors[question.difficulty as keyof typeof difficultyColors] + " px-2 py-0.5 rounded"}>
-                        {question.difficulty}
+                      <span className={difficultyColors[(currentQuestion.difficulty || 1) as keyof typeof difficultyColors] + " px-2 py-0.5 rounded"}>
+                        {currentQuestion.difficulty === 1 ? 'Easy' : currentQuestion.difficulty === 2 ? 'Medium' : 'Hard'}
                       </span>
                       <ArrowRight className="w-4 h-4 text-text-muted" />
                       <span className={difficultyColors[nextDifficulty as keyof typeof difficultyColors] + " px-2 py-0.5 rounded"}>
-                        {nextDifficulty}
+                        {nextDifficulty === 1 ? 'Easy' : nextDifficulty === 2 ? 'Medium' : 'Hard'}
                       </span>
                     </div>
                   </div>
@@ -218,10 +285,10 @@ export default function Practice() {
           {!hasSubmitted ? (
             <Button 
               onClick={handleSubmit} 
-              disabled={!selectedOptionId}
+              disabled={!selectedOptionId || isSubmitting}
               className="w-full md:w-64 text-lg py-6"
             >
-              Check Answer
+              {isSubmitting ? <><Loader2 className="mr-2 w-5 h-5 animate-spin"/> Submitting</> : 'Check Answer'}
             </Button>
           ) : (
             <Button 

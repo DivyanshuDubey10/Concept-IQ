@@ -1,44 +1,81 @@
 import { useState, useEffect } from 'react'
-import { useNavigate } from 'react-router-dom'
-import { X, CheckCircle2, XCircle, ArrowRight } from 'lucide-react'
-import { dashboardData } from '../lib/mock-data'
+import { useNavigate, useParams } from 'react-router-dom'
+import { X, CheckCircle2, XCircle, ArrowRight, Loader2, AlertCircle } from 'lucide-react'
+import { startQuiz, submitQuizAnswer, QuizQuestion, QuizSubmitResponse } from '../lib/api/quizzes'
 import { Button } from '../components/ui/button'
 import { Progress } from '../components/ui/progress'
 import { cn } from '../lib/utils'
 
 export default function Quiz() {
   const navigate = useNavigate()
-  const { quizData } = dashboardData
+  const { quizId: topicIdParam } = useParams<{ quizId: string }>()
   
-  const [currentIndex, setCurrentIndex] = useState(0)
-  const [selectedOptionId, setSelectedOptionId] = useState<string | null>(null)
-  const [hasSubmitted, setHasSubmitted] = useState(false)
+  const [realQuizId, setRealQuizId] = useState<string | null>(null)
+  const [currentQuestion, setCurrentQuestion] = useState<QuizQuestion | null>(null)
+  const [isLoading, setIsLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
+  
+  const [currentIndex, setCurrentIndex] = useState(0) // Just for visual progress
+  const [selectedOptionId, setSelectedOptionId] = useState<number | null>(null)
+  
+  const [isSubmitting, setIsSubmitting] = useState(false)
+  const [submitResult, setSubmitResult] = useState<QuizSubmitResponse | null>(null)
+  
   const [isCompleted, setIsCompleted] = useState(false)
-  const [animateKey, setAnimateKey] = useState(0) // Used to trigger fade in
+  const [animateKey, setAnimateKey] = useState(0)
 
-  const question = quizData.questions[currentIndex]
-  const isCorrect = selectedOptionId === question.correctOptionId
-  const total = quizData.questions.length
+  useEffect(() => {
+    async function initQuiz() {
+      if (!topicIdParam) return
+      try {
+        setIsLoading(true)
+        // Treat the URL param as the topic ID for the diagnostic start
+        const topicId = parseInt(topicIdParam, 10)
+        const data = await startQuiz(topicId)
+        setRealQuizId(data.quiz_id)
+        setCurrentQuestion(data.first_question)
+      } catch (err: any) {
+        console.error('Failed to start quiz:', err)
+        setError(err.message || 'Failed to start quiz')
+      } finally {
+        setIsLoading(false)
+      }
+    }
+    initQuiz()
+  }, [topicIdParam])
 
-  const handleSelect = (id: string) => {
-    if (!hasSubmitted) {
+  const hasSubmitted = submitResult !== null
+  const isCorrect = submitResult?.is_correct
+  const correctOptionId = submitResult?.correct_option_id
+
+  const handleSelect = (id: number) => {
+    if (!hasSubmitted && !isSubmitting) {
       setSelectedOptionId(id)
     }
   }
 
-  const handleSubmit = () => {
-    if (!selectedOptionId) return
-    setHasSubmitted(true)
+  const handleSubmit = async () => {
+    if (!selectedOptionId || !realQuizId || !currentQuestion) return
+    try {
+      setIsSubmitting(true)
+      const result = await submitQuizAnswer(realQuizId, currentQuestion.question_id, selectedOptionId)
+      setSubmitResult(result)
+    } catch (err: any) {
+      console.error('Failed to submit answer:', err)
+    } finally {
+      setIsSubmitting(false)
+    }
   }
 
   const handleNext = () => {
-    if (currentIndex < total - 1) {
-      setHasSubmitted(false)
-      setSelectedOptionId(null)
-      setCurrentIndex(prev => prev + 1)
-      setAnimateKey(prev => prev + 1) // re-trigger animation
-    } else {
+    if (submitResult?.is_completed) {
       setIsCompleted(true)
+    } else if (submitResult?.next_question) {
+      setSubmitResult(null)
+      setSelectedOptionId(null)
+      setCurrentQuestion(submitResult.next_question)
+      setCurrentIndex(prev => prev + 1)
+      setAnimateKey(prev => prev + 1)
     }
   }
 
@@ -46,19 +83,22 @@ export default function Quiz() {
     navigate(-1)
   }
 
-  if (isCompleted) {
+  if (isLoading) {
     return (
-      <div className="min-h-screen bg-background flex flex-col items-center justify-center p-6 animate-fade-in text-center space-y-6">
-        <div className="w-20 h-20 bg-success/20 text-success rounded-full flex items-center justify-center mb-4">
-          <CheckCircle2 className="w-10 h-10" />
-        </div>
-        <h1 className="text-4xl font-bold text-white tracking-tight">Session Complete</h1>
-        <p className="text-text-muted text-lg max-w-md">
-          Great job! Your mastery metrics have been updated based on your performance.
-        </p>
-        <Button onClick={() => navigate('/analysis/t1')} className="mt-8 px-8 group">
-          View Analysis <ArrowRight className="ml-2 w-4 h-4 transition-transform group-hover:translate-x-1" />
-        </Button>
+      <div className="min-h-screen bg-background flex flex-col items-center justify-center p-6 space-y-4">
+        <Loader2 className="w-8 h-8 text-primary animate-spin" />
+        <p className="text-text-muted">Preparing your session...</p>
+      </div>
+    )
+  }
+
+  if (error || !currentQuestion) {
+    return (
+      <div className="min-h-screen bg-background flex flex-col items-center justify-center p-6 space-y-6 text-center">
+        <AlertCircle className="w-12 h-12 text-error" />
+        <h2 className="text-2xl font-bold text-white">Could not load session</h2>
+        <p className="text-text-muted max-w-md">{error}</p>
+        <Button onClick={handleExit} variant="outline">Back to Library</Button>
       </div>
     )
   }
@@ -68,7 +108,7 @@ export default function Quiz() {
       {/* Top Bar */}
       <header className="px-6 py-6 flex items-center justify-between">
         <div className="text-text-muted font-medium tracking-wide">
-          <span className="text-white">{quizData.topicName}</span> <span className="mx-2 opacity-50">·</span> {quizData.conceptName}
+          <span className="text-white">Diagnostic Session</span>
         </div>
         <button 
           onClick={handleExit}
@@ -85,21 +125,21 @@ export default function Quiz() {
         {/* Subtle Progress */}
         <div className="mb-12 space-y-3">
           <div className="text-sm font-semibold text-primary uppercase tracking-widest">
-            Question {currentIndex + 1} of {total}
+            Question {currentIndex + 1}
           </div>
-          <Progress value={((currentIndex) / total) * 100} className="h-1" />
+          <Progress value={((currentIndex) / 5) * 100} className="h-1" /> {/* Mocking total of 5 for visual progress */}
         </div>
 
         {/* Question & Options (Animated wrapper) */}
         <div key={animateKey} className="animate-fade-in space-y-10 flex-1">
           <h2 className="text-3xl md:text-4xl font-semibold text-white leading-tight">
-            {question.text}
+            {currentQuestion.text}
           </h2>
 
           <div className="space-y-4">
-            {question.options.map(option => {
+            {currentQuestion.options.map(option => {
               const isSelected = selectedOptionId === option.id
-              const isCorrectAnswer = option.id === question.correctOptionId
+              const isCorrectAnswer = option.id === correctOptionId
               
               let stateClass = "border-border/50 bg-surface/50 hover:border-primary/50 hover:bg-surface"
               let icon = null
@@ -122,11 +162,11 @@ export default function Quiz() {
                 <button
                   key={option.id}
                   onClick={() => handleSelect(option.id)}
-                  disabled={hasSubmitted}
+                  disabled={hasSubmitted || isSubmitting}
                   className={cn(
                     "w-full text-left p-6 rounded-xl border-2 transition-all duration-300 flex items-center text-lg",
                     stateClass,
-                    !hasSubmitted && "cursor-pointer"
+                    !hasSubmitted && !isSubmitting && "cursor-pointer"
                   )}
                 >
                   <span className={cn("font-medium", hasSubmitted && isCorrectAnswer ? "text-success" : "text-white")}>
@@ -139,7 +179,7 @@ export default function Quiz() {
           </div>
 
           {/* Feedback Area */}
-          {hasSubmitted && (
+          {hasSubmitted && submitResult && (
             <div className={cn(
               "p-6 rounded-xl animate-slide-up mt-8",
               isCorrect ? "bg-success/10 border border-success/20 text-success" : "bg-error/10 border border-error/20 text-error"
@@ -148,7 +188,7 @@ export default function Quiz() {
                 {isCorrect ? <><CheckCircle2 className="mr-2 w-5 h-5" /> Correct</> : <><XCircle className="mr-2 w-5 h-5" /> Incorrect</>}
               </h3>
               <p className="text-white/80 leading-relaxed">
-                {question.explanation}
+                {submitResult.ai_explanation}
               </p>
             </div>
           )}
@@ -166,21 +206,37 @@ export default function Quiz() {
           {!hasSubmitted ? (
             <Button 
               onClick={handleSubmit} 
-              disabled={!selectedOptionId}
+              disabled={!selectedOptionId || isSubmitting}
               className="w-48 text-lg"
             >
-              Submit Answer
+              {isSubmitting ? <><Loader2 className="mr-2 w-5 h-5 animate-spin"/> Submitting</> : 'Submit Answer'}
             </Button>
           ) : (
             <Button 
               onClick={handleNext} 
               className="w-48 text-lg bg-white text-background hover:bg-white/90"
             >
-              {currentIndex < total - 1 ? 'Next Question' : 'Complete Session'} <ArrowRight className="ml-2 w-5 h-5" />
+              {!submitResult?.is_completed ? 'Next Question' : 'Complete Session'} <ArrowRight className="ml-2 w-5 h-5" />
             </Button>
           )}
         </div>
       </div>
+
+      {/* Completion Modal / Overlay */}
+      {isCompleted && (
+        <div className="fixed inset-0 z-[100] bg-background/95 backdrop-blur-sm flex flex-col items-center justify-center p-6 animate-fade-in text-center space-y-6">
+          <div className="w-20 h-20 bg-success/20 text-success rounded-full flex items-center justify-center mb-4">
+            <CheckCircle2 className="w-10 h-10" />
+          </div>
+          <h1 className="text-4xl font-bold text-white tracking-tight">Session Complete</h1>
+          <p className="text-text-muted text-lg max-w-md">
+            Great job! Your mastery metrics have been updated based on your performance.
+          </p>
+          <Button onClick={() => navigate(`/analysis/${topicIdParam}`)} className="mt-8 px-8 group">
+            View Analysis <ArrowRight className="ml-2 w-4 h-4 transition-transform group-hover:translate-x-1" />
+          </Button>
+        </div>
+      )}
     </div>
   )
 }
