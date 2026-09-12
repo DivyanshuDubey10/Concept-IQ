@@ -9,8 +9,7 @@ import Revision from './pages/Revision'
 import TopicDetail from './pages/TopicDetail'
 import Quiz from './pages/Quiz'
 import ConceptAnalysis from './pages/ConceptAnalysis'
-import Login from './pages/Login'
-import Signup from './pages/Signup'
+import Auth from './pages/Auth'
 import { useAuth } from './lib/contexts/AuthContext'
 import { Loader2 } from 'lucide-react'
 
@@ -46,8 +45,8 @@ function App() {
       </Route>
       <Route path="/quiz/:quizId" element={<ProtectedRoute><Quiz /></ProtectedRoute>} />
       <Route path="/practice" element={<ProtectedRoute><Practice /></ProtectedRoute>} />
-      <Route path="/login" element={<Login />} />
-      <Route path="/signup" element={<Signup />} />
+      <Route path="/login" element={<Auth />} />
+      <Route path="/signup" element={<Auth />} />
     </Routes>
   )
 }
