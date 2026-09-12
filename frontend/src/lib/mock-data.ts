@@ -71,5 +71,35 @@ export const dashboardData = {
     recommendedNext: {
       action: "Strengthen Recursion"
     }
+  },
+  quizData: {
+    topicName: "Python",
+    conceptName: "Recursion",
+    questions: [
+      {
+        id: "q1",
+        text: "What is the primary purpose of a base case in a recursive function?",
+        options: [
+          { id: "o1", text: "To start the recursive calls" },
+          { id: "o2", text: "To prevent infinite recursion by stopping the calls" },
+          { id: "o3", text: "To optimize the memory usage of the function" },
+          { id: "o4", text: "To return the final accumulated value to the user" }
+        ],
+        correctOptionId: "o2",
+        explanation: "A base case provides a condition under which the recursion stops, preventing an infinite loop that would eventually cause a stack overflow."
+      },
+      {
+        id: "q2",
+        text: "Which of the following problems is best suited for a recursive solution?",
+        options: [
+          { id: "o1", text: "Calculating the sum of an array using a for loop" },
+          { id: "o2", text: "Traversing a tree or graph data structure" },
+          { id: "o3", text: "Connecting to a database" },
+          { id: "o4", text: "Parsing a JSON string into an object" }
+        ],
+        correctOptionId: "o2",
+        explanation: "Trees and graphs are naturally recursive data structures, making recursive traversal algorithms (like DFS) highly elegant and suitable."
+      }
+    ]
   }
 };

@@ -57,10 +57,12 @@ export default function TopicDetail() {
                   <Play className="mr-2 w-4 h-4 fill-current transition-transform group-hover:scale-110" />
                   Start Learning
                 </Button>
-                <Button variant="secondary" className="w-full group">
-                  <Activity className="mr-2 w-4 h-4 text-primary group-hover:text-primary-hover" />
-                  Take Diagnostic
-                </Button>
+                <Link to="/quiz/t1" className="w-full">
+                  <Button variant="secondary" className="w-full group">
+                    <Activity className="mr-2 w-4 h-4 text-primary group-hover:text-primary-hover" />
+                    Take Diagnostic
+                  </Button>
+                </Link>
               </div>
             </CardContent>
           </Card>

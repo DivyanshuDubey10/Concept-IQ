@@ -7,6 +7,7 @@ import AITutor from './pages/AITutor'
 import Progress from './pages/Progress'
 import Revision from './pages/Revision'
 import TopicDetail from './pages/TopicDetail'
+import Quiz from './pages/Quiz'
 
 function App() {
   return (
@@ -20,6 +21,7 @@ function App() {
         <Route path="/progress" element={<Progress />} />
         <Route path="/revision" element={<Revision />} />
       </Route>
+      <Route path="/quiz/:quizId" element={<Quiz />} />
     </Routes>
   )
 }
