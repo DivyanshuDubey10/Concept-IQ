@@ -9,6 +9,8 @@ import Revision from './pages/Revision'
 import TopicDetail from './pages/TopicDetail'
 import Quiz from './pages/Quiz'
 import ConceptAnalysis from './pages/ConceptAnalysis'
+import Login from './pages/Login'
+import Signup from './pages/Signup'
 
 function App() {
   return (
@@ -24,6 +26,8 @@ function App() {
       </Route>
       <Route path="/quiz/:quizId" element={<Quiz />} />
       <Route path="/practice" element={<Practice />} />
+      <Route path="/login" element={<Login />} />
+      <Route path="/signup" element={<Signup />} />
     </Routes>
   )
 }
