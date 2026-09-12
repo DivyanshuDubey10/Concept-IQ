@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { useNavigate, useLocation } from 'react-router-dom'
+import { useNavigate, useLocation, Link } from 'react-router-dom'
 import { Eye, EyeOff, Loader2, BrainCircuit, AlertCircle, CheckCircle2 } from 'lucide-react'
 import { login, register } from '../lib/api/auth'
 
@@ -98,7 +98,7 @@ export default function Auth() {
 
         {/* ── Sign Up Form (hidden by default, revealed on signup) ─────── */}
         <div className="auth-form-container auth-sign-up">
-          <form className="flex flex-col items-center gap-3 w-full px-10 py-8" onSubmit={handleSignup} noValidate>
+          <form className="flex flex-col items-center gap-2 w-full px-10 py-6" onSubmit={handleSignup} noValidate>
             <h1 className="!text-2xl font-bold text-white !mb-0">Create Account</h1>
 
             {signupStatus === 'error' && (
@@ -144,7 +144,7 @@ export default function Auth() {
         </div>
 
         {/* ── Sign In Form (visible by default) ───────────────────────── */}
-        <div className="auth-form-container auth-sign-in" style={{ background: 'hsl(220 25% 10%)' }}>
+        <div className="auth-form-container auth-sign-in">
           <form className="flex flex-col items-center gap-3 w-full px-10 py-8" onSubmit={handleLogin} noValidate>
             <h1 className="!text-2xl font-bold text-white !mb-0">Sign in</h1>
 
@@ -170,7 +170,7 @@ export default function Auth() {
               </button>
             </div>
 
-            <a href="#" className="text-xs text-white/40 hover:text-white/70 transition-colors self-end !mb-0">Forgot your password?</a>
+            <Link to="/forgot-password" className="text-xs text-white/40 hover:text-white/70 transition-colors self-end !mb-0">Forgot your password?</Link>
 
             <button type="submit" className={solidBtnClass} disabled={loginStatus === 'loading' || loginStatus === 'success'}>
               {loginStatus === 'loading' ? <><Loader2 className="w-4 h-4 animate-spin" /> Signing in…</> : 'Sign In'}

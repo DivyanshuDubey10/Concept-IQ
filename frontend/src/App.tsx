@@ -10,6 +10,7 @@ import TopicDetail from './pages/TopicDetail'
 import Quiz from './pages/Quiz'
 import ConceptAnalysis from './pages/ConceptAnalysis'
 import Auth from './pages/Auth'
+import ForgotPassword from './pages/ForgotPassword'
 import { useAuth } from './lib/contexts/AuthContext'
 import { Loader2 } from 'lucide-react'
 
@@ -47,6 +48,7 @@ function App() {
       <Route path="/practice" element={<ProtectedRoute><Practice /></ProtectedRoute>} />
       <Route path="/login" element={<Auth />} />
       <Route path="/signup" element={<Auth />} />
+      <Route path="/forgot-password" element={<ForgotPassword />} />
     </Routes>
   )
 }
