@@ -1,3 +1,4 @@
+
 from openai import OpenAI
 from dotenv import load_dotenv
 import os
@@ -59,7 +60,38 @@ Return ONLY valid JSON in exactly this format:
 
     content = response.choices[0].message.content
 
-    question = json.loads(content)
-
-    return question
+    try:
+        content = content.strip()
+        if content.startswith("```json"):
+            content = content[7:]
+        if content.startswith("```"):
+            content = content[3:]
+        if content.endswith("```"):
+            content = content[:-3]
+        
+        question = json.loads(content)
+        
+        # Validate required keys
+        required_keys = ["question", "options", "correct_answer", "explanation"]
+        for key in required_keys:
+            if key not in question:
+                raise ValueError(f"Missing required key: {key}")
+                
+        if not all(k in question["options"] for k in ["A", "B", "C", "D"]):
+            raise ValueError("Missing options A, B, C, or D")
+            
+        return question
+    except (json.JSONDecodeError, ValueError) as e:
+        print(f"Warning: Question generation failed ({e}). Using fallback.")
+        return {
+            "question": f"Which of the following best describes {concept} in {topic}?",
+            "options": {
+                "A": f"It is the core principle of {concept}.",
+                "B": "It is an unrelated concept.",
+                "C": "It is a mathematical error.",
+                "D": "None of the above."
+            },
+            "correct_answer": "A",
+            "explanation": f"This is a fallback generated because the AI failed to produce valid JSON for {concept}."
+        }
 
