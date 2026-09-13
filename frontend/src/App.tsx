@@ -13,6 +13,9 @@ import Quiz from './pages/Quiz'
 import ConceptAnalysis from './pages/ConceptAnalysis'
 import Auth from './pages/Auth'
 import ForgotPassword from './pages/ForgotPassword'
+import About from './pages/About'
+import PrivacyPolicy from './pages/PrivacyPolicy'
+import TermsOfService from './pages/TermsOfService'
 import { useAuth } from './lib/contexts/AuthContext'
 import { Loader2 } from 'lucide-react'
 
@@ -42,6 +45,9 @@ function App() {
       <Route path="/login" element={<Auth />} />
       <Route path="/signup" element={<Auth />} />
       <Route path="/forgot-password" element={<ForgotPassword />} />
+      <Route path="/about" element={<About />} />
+      <Route path="/privacy" element={<PrivacyPolicy />} />
+      <Route path="/terms" element={<TermsOfService />} />
 
       {/* Authenticated routes */}
       <Route element={<ProtectedRoute><Shell /></ProtectedRoute>}>

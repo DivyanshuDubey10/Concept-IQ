@@ -14,6 +14,14 @@ const footerLinks = [
     ],
   },
   {
+    heading: 'Company',
+    items: [
+      { label: 'About', href: '/about' },
+      { label: 'Privacy Policy', href: '/privacy' },
+      { label: 'Terms of Service', href: '/terms' },
+    ],
+  },
+  {
     heading: 'Account',
     items: [
       { label: 'Log in', href: '/login' },
