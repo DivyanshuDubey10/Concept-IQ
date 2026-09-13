@@ -6,6 +6,7 @@ import Practice from './pages/Practice'
 import AITutor from './pages/AITutor'
 import Progress from './pages/Progress'
 import Revision from './pages/Revision'
+import Settings from './pages/Settings'
 import TopicDetail from './pages/TopicDetail'
 import Quiz from './pages/Quiz'
 import ConceptAnalysis from './pages/ConceptAnalysis'
@@ -43,6 +44,7 @@ function App() {
         <Route path="/ai-tutor" element={<AITutor />} />
         <Route path="/progress" element={<Progress />} />
         <Route path="/revision" element={<Revision />} />
+        <Route path="/settings" element={<Settings />} />
       </Route>
       <Route path="/quiz/:quizId" element={<ProtectedRoute><Quiz /></ProtectedRoute>} />
       <Route path="/practice" element={<ProtectedRoute><Practice /></ProtectedRoute>} />
