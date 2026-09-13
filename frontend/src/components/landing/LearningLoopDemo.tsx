@@ -26,7 +26,7 @@ const STAGES: StageConfig[] = [
 ]
 
 // ─── Sub-components ──────────────────────────────────────────────────────────
-function DemoShell({ children, className }: { children: React.ReactNode; className?: string }) {
+function DemoShell({ children, stageLabel, className }: { children: React.ReactNode; stageLabel: string; className?: string }) {
   return (
     <div className={cn('bg-surface rounded-2xl border border-border/60 shadow-premium overflow-hidden', className)}>
       {/* Fake browser chrome */}
@@ -37,8 +37,16 @@ function DemoShell({ children, className }: { children: React.ReactNode; classNa
         <div className="flex-1 mx-3 h-5 rounded bg-text-main/5 border border-border/40 flex items-center justify-center">
           <span className="text-[10px] text-text-muted/50 font-mono">conceptiq.app</span>
         </div>
+        {/* Stage status indicator */}
+        <div className="shrink-0 flex items-center gap-1.5 pl-2 border-l border-border/30">
+          <div className="w-1.5 h-1.5 rounded-full bg-primary animate-pulse-subtle" />
+          <span className="text-[10px] font-medium text-text-muted/70 whitespace-nowrap max-w-[130px] truncate">
+            {stageLabel}
+          </span>
+        </div>
       </div>
-      <div className="p-6 md:p-8 min-h-[320px] flex items-center justify-center">
+      {/* Fixed height — prevents layout reflow between stages */}
+      <div className="relative p-6 md:p-8 h-[360px] flex items-center justify-center">
         {children}
       </div>
     </div>
@@ -323,12 +331,7 @@ export function LearningLoopDemo() {
 
   return (
     <div className="select-none" key={key}>
-      {/* Stage label strip */}
-      <div className="mb-3 flex items-center justify-center gap-2">
-        <span className="text-xs font-medium text-text-muted">{stageLabels[currentStage]}</span>
-      </div>
-
-      <DemoShell>
+      <DemoShell stageLabel={stageLabels[currentStage]}>
         <div className="relative w-full">
           <Fade visible={currentStage === 'question'}>
             <QuestionStage selectedId={selectedOption} onSelect={handleOptionSelect} />
