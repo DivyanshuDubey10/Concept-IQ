@@ -4,29 +4,38 @@ import { cn } from '../../lib/utils'
 
 export function MobileNav() {
   return (
-    <nav className="md:hidden fixed bottom-0 left-0 right-0 border-t border-border bg-surface/90 backdrop-blur-md pb-safe z-50">
-      <div className="flex items-center justify-around px-2 py-3">
+    <div className="md:hidden fixed bottom-5 left-1/2 -translate-x-1/2 z-50">
+      {/* iOS-style floating pill */}
+      <nav className="flex items-center gap-1 px-3 py-2.5 rounded-2xl glass shadow-nav-pill border border-text-main/8">
         {navLinks.map((link) => {
           const Icon = link.icon
           return (
             <NavLink
               key={link.name}
               to={link.path}
+              end={link.path === '/'}
               className={({ isActive }) =>
                 cn(
-                  "flex flex-col items-center justify-center space-y-1 min-w-[64px] p-2 rounded-lg transition-colors",
+                  'flex flex-col items-center gap-0.5 px-3 py-1 rounded-xl transition-all duration-200 min-w-[52px]',
                   isActive
-                    ? "text-primary"
-                    : "text-text-muted hover:text-text-main"
+                    ? 'bg-primary/15 text-primary'
+                    : 'text-text-muted hover:text-text-main'
                 )
               }
             >
-              <Icon className="w-5 h-5" />
-              <span className="text-[10px] font-medium">{link.name}</span>
+              {({ isActive }) => (
+                <>
+                  <Icon
+                    className={cn('w-5 h-5 transition-all', isActive ? 'text-primary scale-105' : '')}
+                    strokeWidth={isActive ? 2.5 : 2}
+                  />
+                  <span className="text-[10px] font-medium leading-none">{link.name}</span>
+                </>
+              )}
             </NavLink>
           )
         })}
-      </div>
-    </nav>
+      </nav>
+    </div>
   )
 }
