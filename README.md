@@ -27,8 +27,18 @@ Instead of generating a generic "60% score" on a broad quiz, ConceptIQ breaks to
 *   **Frontend:** React.js, Tailwind CSS
 *   **Backend Application:** Python, FastAPI
 *   **Intelligence Engine:** Custom Rule-Based Engine & External LLM API
-*   **Database:** SQLite
+*   **Database:** PostgreSQL (Supabase / local Docker)
 *   **Experimental ML (Future Scope):** `scikit-learn`
+
+## 🚀 Instant Local Setup
+
+To boot the entire backend environment for local development or demo purposes, run the setup script from the root of the project:
+
+```bash
+chmod +x setup.sh
+./setup.sh
+```
+*This will start PostgreSQL via Docker, install dependencies, run migrations, seed the database with MVP courses, and boot the API.*
 
 ## Recent Updates (Development Log)
 
