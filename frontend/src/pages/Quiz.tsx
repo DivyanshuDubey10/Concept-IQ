@@ -97,9 +97,9 @@ export default function Quiz() {
     return (
       <div className="min-h-screen bg-background flex flex-col items-center justify-center p-6 space-y-6 text-center">
         <AlertCircle className="w-12 h-12 text-error" />
-        <h2 className="text-2xl font-bold text-white">Could not load session</h2>
+        <h2 className="text-2xl font-bold text-text-main">Could not load session</h2>
         <p className="text-text-muted max-w-md">{error}</p>
-        <Button onClick={handleExit} variant="outline">Back to Library</Button>
+          <Button onClick={() => navigate('/learn')} variant="secondary">Back to Library</Button>
       </div>
     )
   }
@@ -109,11 +109,11 @@ export default function Quiz() {
       {/* Top Bar */}
       <header className="px-6 py-6 flex items-center justify-between">
         <div className="text-text-muted font-medium tracking-wide">
-          <span className="text-white">Diagnostic Session</span>
+          <span className="text-text-main">Diagnostic Session</span>
         </div>
         <button 
           onClick={handleExit}
-          className="p-2 text-text-muted hover:text-white hover:bg-white/5 rounded-full transition-colors"
+          className="p-2 text-text-muted hover:text-text-main hover:bg-text-main/5 rounded-full transition-colors"
           title="Exit Session"
         >
           <X className="w-6 h-6" />
@@ -133,7 +133,7 @@ export default function Quiz() {
 
         {/* Question & Options (Animated wrapper) */}
         <div key={animateKey} className="animate-fade-in space-y-10 flex-1">
-          <h2 className="text-3xl md:text-4xl font-semibold text-white leading-tight">
+          <h2 className="text-3xl md:text-4xl font-semibold text-text-main leading-tight">
             {currentQuestion.text}
           </h2>
 
@@ -170,7 +170,7 @@ export default function Quiz() {
                     !hasSubmitted && !isSubmitting && "cursor-pointer"
                   )}
                 >
-                  <span className={cn("font-medium", hasSubmitted && isCorrectAnswer ? "text-success" : "text-white")}>
+                  <span className={cn("font-medium", hasSubmitted && isCorrectAnswer ? "text-success" : "text-text-main")}>
                     {option.text}
                   </span>
                   {icon}
@@ -188,7 +188,7 @@ export default function Quiz() {
               <h3 className="font-semibold text-lg flex items-center mb-2">
                 {isCorrect ? <><CheckCircle2 className="mr-2 w-5 h-5" /> Correct</> : <><XCircle className="mr-2 w-5 h-5" /> Incorrect</>}
               </h3>
-              <p className="text-white/80 leading-relaxed">
+              <p className="text-text-main/80 leading-relaxed">
                 {submitResult.ai_explanation}
               </p>
             </div>
@@ -200,7 +200,7 @@ export default function Quiz() {
       {/* Sticky Bottom Action Bar */}
       <div className="fixed bottom-0 left-0 right-0 p-6 bg-background/95 backdrop-blur-md border-t border-border z-50">
         <div className="max-w-3xl mx-auto flex justify-between items-center">
-          <Button variant="ghost" onClick={handleExit} className="text-text-muted hover:text-white">
+          <Button variant="ghost" onClick={handleExit} className="text-text-muted hover:text-text-main">
             Exit
           </Button>
           
@@ -215,7 +215,7 @@ export default function Quiz() {
           ) : (
             <Button 
               onClick={handleNext} 
-              className="w-48 text-lg bg-white text-background hover:bg-white/90"
+              className="w-48 text-lg bg-text-main text-background hover:bg-text-main/90"
             >
               {!submitResult?.is_completed ? 'Next Question' : 'Complete Session'} <ArrowRight className="ml-2 w-5 h-5" />
             </Button>
@@ -229,7 +229,7 @@ export default function Quiz() {
           <div className="w-20 h-20 bg-success/20 text-success rounded-full flex items-center justify-center mb-4">
             <CheckCircle2 className="w-10 h-10" />
           </div>
-          <h1 className="text-4xl font-bold text-white tracking-tight">Session Complete</h1>
+          <h1 className="text-4xl font-bold text-text-main tracking-tight">Session Complete</h1>
           <p className="text-text-muted text-lg max-w-md">
             Great job! Your mastery metrics have been updated based on your performance.
           </p>

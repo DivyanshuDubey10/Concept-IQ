@@ -11,15 +11,15 @@ import { login, register } from '../lib/api/auth'
 
 // Input field shared styling — dark glassy, consistent with design system
 const inputClass =
-  'w-full px-4 py-3 rounded-xl bg-background/70 border border-white/10 text-white placeholder-white/30 text-sm focus:outline-none focus:border-primary/60 focus:ring-1 focus:ring-primary/40 transition-colors'
+  'w-full px-4 py-3 rounded-xl bg-background/70 border border-text-main/10 text-text-main placeholder-white/30 text-sm focus:outline-none focus:border-primary/60 focus:ring-1 focus:ring-primary/40 transition-colors'
 
 // Ghost outline button for the overlay panels
 const ghostBtnClass =
-  'mt-4 px-10 py-3 rounded-full border border-white text-white text-xs font-semibold uppercase tracking-widest bg-transparent hover:bg-white/10 active:scale-95 transition-all duration-200 cursor-pointer'
+  'mt-4 px-10 py-3 rounded-full border border-text-main text-text-main text-xs font-semibold uppercase tracking-widest bg-transparent hover:bg-text-main/10 active:scale-95 transition-all duration-200 cursor-pointer'
 
 // Solid primary button
 const solidBtnClass =
-  'w-full py-3 rounded-full bg-primary text-white text-xs font-bold uppercase tracking-widest hover:bg-primary-hover active:scale-95 transition-all duration-200 cursor-pointer flex items-center justify-center gap-2 disabled:opacity-60 disabled:cursor-not-allowed'
+  'w-full py-3 rounded-full bg-primary text-text-main text-xs font-bold uppercase tracking-widest hover:bg-primary-hover active:scale-95 transition-all duration-200 cursor-pointer flex items-center justify-center gap-2 disabled:opacity-60 disabled:cursor-not-allowed'
 
 export default function Auth() {
   const navigate = useNavigate()
@@ -50,7 +50,7 @@ export default function Auth() {
       const res = await login(loginEmail, loginPassword)
       localStorage.setItem('conceptiq_token', res.access_token)
       setLoginStatus('success')
-      setTimeout(() => navigate('/'), 700)
+      setTimeout(() => { window.location.href = '/' }, 700)
     } catch (err: any) {
       setLoginStatus('error')
       setLoginError(err?.response?.data?.detail || err.message || 'Incorrect email or password')
@@ -77,7 +77,7 @@ export default function Auth() {
       const res = await register(signupName, signupEmail, signupPwd)
       localStorage.setItem('conceptiq_token', res.access_token)
       setSignupStatus('success')
-      setTimeout(() => navigate('/'), 700)
+      setTimeout(() => { window.location.href = '/' }, 700)
     } catch (err: any) {
       setSignupStatus('error')
       setSignupError(err?.response?.data?.detail || err.message || 'Registration failed. Please try again.')
@@ -90,7 +90,7 @@ export default function Auth() {
       {/* Brand */}
       <div className="flex items-center gap-2 mb-8">
         <BrainCircuit className="w-7 h-7 text-primary" />
-        <span className="text-xl font-bold tracking-tight text-white">ConceptIQ</span>
+        <span className="text-xl font-bold tracking-tight text-text-main">ConceptIQ</span>
       </div>
 
       {/* ── The Card ── */}
@@ -99,7 +99,7 @@ export default function Auth() {
         {/* ── Sign Up Form (hidden by default, revealed on signup) ─────── */}
         <div className="auth-form-container auth-sign-up">
           <form className="flex flex-col items-center gap-2 w-full px-10 py-6" onSubmit={handleSignup} noValidate>
-            <h1 className="!text-2xl font-bold text-white !mb-0">Create Account</h1>
+            <h1 className="!text-2xl font-bold text-text-main !mb-0">Create Account</h1>
 
             {signupStatus === 'error' && (
               <div className="w-full flex items-start gap-2 p-3 rounded-xl bg-red-500/10 border border-red-500/20 text-xs text-red-400">
@@ -119,14 +119,14 @@ export default function Auth() {
 
             <div className="relative w-full">
               <input type={showSignupPwd ? 'text' : 'password'} className={inputClass + ' pr-11'} placeholder="Password" value={signupPwd} onChange={e => setSignupPwd(e.target.value)} disabled={signupStatus === 'loading' || signupStatus === 'success'} />
-              <button type="button" className="absolute right-3 top-1/2 -translate-y-1/2 text-white/40 hover:text-white/80 transition-colors" onClick={() => setShowSignupPwd(v => !v)}>
+              <button type="button" className="absolute right-3 top-1/2 -translate-y-1/2 text-text-main/40 hover:text-text-main/80 transition-colors" onClick={() => setShowSignupPwd(v => !v)}>
                 {showSignupPwd ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
               </button>
             </div>
 
             <div className="relative w-full">
               <input type={showSignupConfirm ? 'text' : 'password'} className={inputClass + ' pr-11'} placeholder="Confirm Password" value={signupConfirm} onChange={e => setSignupConfirm(e.target.value)} disabled={signupStatus === 'loading' || signupStatus === 'success'} />
-              <button type="button" className="absolute right-3 top-1/2 -translate-y-1/2 text-white/40 hover:text-white/80 transition-colors" onClick={() => setShowSignupConfirm(v => !v)}>
+              <button type="button" className="absolute right-3 top-1/2 -translate-y-1/2 text-text-main/40 hover:text-text-main/80 transition-colors" onClick={() => setShowSignupConfirm(v => !v)}>
                 {showSignupConfirm ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
               </button>
             </div>
@@ -136,7 +136,7 @@ export default function Auth() {
             </button>
 
             {/* Mobile-only toggle */}
-            <p className="text-xs text-white/40 mt-2 md:hidden">
+            <p className="text-xs text-text-main/40 mt-2 md:hidden">
               Already have an account?{' '}
               <button type="button" className="text-primary underline" onClick={() => toggle(false)}>Sign in</button>
             </p>
@@ -146,7 +146,7 @@ export default function Auth() {
         {/* ── Sign In Form (visible by default) ───────────────────────── */}
         <div className="auth-form-container auth-sign-in">
           <form className="flex flex-col items-center gap-3 w-full px-10 py-8" onSubmit={handleLogin} noValidate>
-            <h1 className="!text-2xl font-bold text-white !mb-0">Sign in</h1>
+            <h1 className="!text-2xl font-bold text-text-main !mb-0">Sign in</h1>
 
             {loginStatus === 'error' && (
               <div className="w-full flex items-start gap-2 p-3 rounded-xl bg-red-500/10 border border-red-500/20 text-xs text-red-400">
@@ -165,19 +165,19 @@ export default function Auth() {
 
             <div className="relative w-full">
               <input type={showLoginPwd ? 'text' : 'password'} className={inputClass + ' pr-11'} placeholder="Password" value={loginPassword} onChange={e => setLoginPassword(e.target.value)} disabled={loginStatus === 'loading' || loginStatus === 'success'} />
-              <button type="button" className="absolute right-3 top-1/2 -translate-y-1/2 text-white/40 hover:text-white/80 transition-colors" onClick={() => setShowLoginPwd(v => !v)}>
+              <button type="button" className="absolute right-3 top-1/2 -translate-y-1/2 text-text-main/40 hover:text-text-main/80 transition-colors" onClick={() => setShowLoginPwd(v => !v)}>
                 {showLoginPwd ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
               </button>
             </div>
 
-            <Link to="/forgot-password" className="text-xs text-white/40 hover:text-white/70 transition-colors self-end !mb-0">Forgot your password?</Link>
+            <Link to="/forgot-password" className="text-xs text-text-main/40 hover:text-text-main/70 transition-colors self-end !mb-0">Forgot your password?</Link>
 
             <button type="submit" className={solidBtnClass} disabled={loginStatus === 'loading' || loginStatus === 'success'}>
               {loginStatus === 'loading' ? <><Loader2 className="w-4 h-4 animate-spin" /> Signing in…</> : 'Sign In'}
             </button>
 
             {/* Mobile-only toggle */}
-            <p className="text-xs text-white/40 mt-2 md:hidden">
+            <p className="text-xs text-text-main/40 mt-2 md:hidden">
               Don't have an account?{' '}
               <button type="button" className="text-primary underline" onClick={() => toggle(true)}>Sign up</button>
             </p>
@@ -190,9 +190,9 @@ export default function Auth() {
 
             {/* Left panel — visible when signup is active, invites user to Sign In */}
             <div className="auth-overlay-panel auth-overlay-left">
-              <BrainCircuit className="w-10 h-10 text-white/80 mb-4" />
-              <h1 className="!text-2xl font-bold text-white !mb-2">Welcome back!</h1>
-              <p className="text-sm text-white/80 leading-relaxed !mb-0">
+              <BrainCircuit className="w-10 h-10 text-text-main/80 mb-4" />
+              <h1 className="!text-2xl font-bold text-text-main !mb-2">Welcome back!</h1>
+              <p className="text-sm text-text-main/80 leading-relaxed !mb-0">
                 Already have an account? Sign in and pick up right where you left off.
               </p>
               <button className={ghostBtnClass} type="button" onClick={() => toggle(false)}>Sign In</button>
@@ -200,9 +200,9 @@ export default function Auth() {
 
             {/* Right panel — visible by default, invites user to Sign Up */}
             <div className="auth-overlay-panel auth-overlay-right">
-              <BrainCircuit className="w-10 h-10 text-white/80 mb-4" />
-              <h1 className="!text-2xl font-bold text-white !mb-2">Hello, friend!</h1>
-              <p className="text-sm text-white/80 leading-relaxed !mb-0">
+              <BrainCircuit className="w-10 h-10 text-text-main/80 mb-4" />
+              <h1 className="!text-2xl font-bold text-text-main !mb-2">Hello, friend!</h1>
+              <p className="text-sm text-text-main/80 leading-relaxed !mb-0">
                 Enter your details and start your personalised learning journey today.
               </p>
               <button className={ghostBtnClass} type="button" onClick={() => toggle(true)}>Sign Up</button>

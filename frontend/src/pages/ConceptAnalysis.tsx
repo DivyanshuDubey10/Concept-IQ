@@ -7,12 +7,12 @@ import { Progress } from '../components/ui/progress'
 import { getTopicById } from '../lib/api/topics'
 import { getProgress } from '../lib/api/progress'
 import type { Topic } from '../lib/api/topics'
-import type { ProgressResponse } from '../lib/api/progress'
+import type { UserProgress } from '../lib/api/progress'
 
 export default function ConceptAnalysis() {
   const { topicId } = useParams<{ topicId: string }>()
   const [topic, setTopic] = useState<Topic | null>(null)
-  const [progressData, setProgressData] = useState<ProgressResponse | null>(null)
+  const [progressData, setProgressData] = useState<UserProgress | null>(null)
   const [isLoading, setIsLoading] = useState(true)
 
   // Animation state for progress bars
@@ -23,7 +23,7 @@ export default function ConceptAnalysis() {
       if (!topicId) return
       try {
         const [topicRes, progressRes] = await Promise.all([
-          getTopicById(Number(topicId)),
+          getTopicById(topicId),
           getProgress(),
         ])
         setTopic(topicRes)
@@ -39,10 +39,10 @@ export default function ConceptAnalysis() {
 
   // Derive concept mastery from real API
   const topicProgress = progressData?.topics.find(t => t.topic_name === topic?.name)
-  const conceptMasteries = topic?.concepts.map(concept => {
+  const conceptMasteries = (topic?.concepts || []).map(concept => {
     const mastery = topicProgress?.concepts.find(c => c.name === concept.name)?.mastery ?? 0
     return { name: concept.name, mastery }
-  }) ?? []
+  })
 
   // Primary concept: lowest mastery (the weak one)
   const sorted = [...conceptMasteries].sort((a, b) => a.mastery - b.mastery)
@@ -69,7 +69,7 @@ export default function ConceptAnalysis() {
   if (!topic || !primaryConcept) {
     return (
       <div className="max-w-4xl mx-auto py-8 text-center space-y-4">
-        <h1 className="text-3xl font-semibold text-white">No data yet</h1>
+        <h1 className="text-3xl font-semibold text-text-main">No data yet</h1>
         <p className="text-text-muted">Complete a quiz on this topic to see your concept analysis.</p>
         <Link to="/learn">
           <Button variant="secondary">Browse Topics</Button>
@@ -86,12 +86,12 @@ export default function ConceptAnalysis() {
 
       {/* Header */}
       <div className="space-y-4 text-center max-w-2xl mx-auto">
-        <h1 className="text-4xl md:text-5xl font-semibold tracking-tight text-white">
+        <h1 className="text-4xl md:text-5xl font-semibold tracking-tight text-text-main">
           Here's what we found.
         </h1>
         <p className="text-xl text-text-muted leading-relaxed">
           You understand most of {topic.name}, but{' '}
-          <strong className="text-white">{primaryConcept.name}</strong> needs attention.
+          <strong className="text-text-main">{primaryConcept.name}</strong> needs attention.
         </p>
       </div>
 
@@ -105,7 +105,7 @@ export default function ConceptAnalysis() {
               <div className="flex justify-between items-start">
                 <div className="space-y-1">
                   <div className="text-sm font-medium uppercase tracking-widest text-warning/80">Primary Focus</div>
-                  <h2 className="text-3xl font-semibold text-white tracking-tight">
+                  <h2 className="text-3xl font-semibold text-text-main tracking-tight">
                     {primaryConcept.name}
                   </h2>
                 </div>
@@ -116,7 +116,7 @@ export default function ConceptAnalysis() {
               </div>
               <div className="space-y-3">
                 <div className="flex justify-between items-end">
-                  <span className="text-5xl font-light text-white">
+                  <span className="text-5xl font-light text-text-main">
                     {primaryAnimated}% <span className="text-lg text-text-muted font-normal tracking-wide">Mastery</span>
                   </span>
                 </div>
@@ -136,7 +136,7 @@ export default function ConceptAnalysis() {
               <div className="space-y-3">
                 {supportingConcepts.map((concept, idx) => (
                   <div key={idx} className="flex justify-between items-center p-5 rounded-xl bg-surface/30 border border-border/30">
-                    <span className="font-medium text-white">{concept.name}</span>
+                    <span className="font-medium text-text-main">{concept.name}</span>
                     <div className="flex items-center gap-4 w-48">
                       <Progress
                         value={supportingAnimated[idx] ?? 0}
@@ -162,7 +162,7 @@ export default function ConceptAnalysis() {
                   <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center mb-6">
                     <BrainCircuit className="w-6 h-6 text-primary" />
                   </div>
-                  <h3 className="text-2xl font-semibold text-white">What to do next</h3>
+                  <h3 className="text-2xl font-semibold text-text-main">What to do next</h3>
                   <p className="text-text-muted leading-relaxed">
                     Let's strengthen your understanding of {primaryConcept.name}.
                   </p>
@@ -182,7 +182,7 @@ export default function ConceptAnalysis() {
                   </Link>
                 </div>
                 <div className="pt-4 text-center">
-                  <Link to="/learn" className="text-sm font-medium text-text-muted hover:text-white transition-colors inline-flex items-center">
+                  <Link to="/learn" className="text-sm font-medium text-text-muted hover:text-text-main transition-colors inline-flex items-center">
                     Return to library <ArrowRight className="ml-1 w-4 h-4" />
                   </Link>
                 </div>

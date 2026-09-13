@@ -1,190 +1,148 @@
 import { useState, useRef, useEffect } from 'react'
-import { BrainCircuit, Send, Sparkles, User, ChevronRight, Loader2 } from 'lucide-react'
-import { Button } from '../components/ui/button'
+import { Send, BrainCircuit, User, Sparkles, Bot } from 'lucide-react'
+import { useAuth } from '../lib/contexts/AuthContext'
 import { cn } from '../lib/utils'
 
-type Message = {
+interface Message {
   id: string
-  role: 'ai' | 'user'
+  role: 'user' | 'assistant'
   content: string
 }
 
-const INITIAL_MESSAGES: Message[] = [
-  {
-    id: 'm1',
-    role: 'ai',
-    content: "I noticed you're reviewing **Base Cases** in Recursion. A base case is the condition that stops the recursive function from calling itself infinitely. Would you like to review how they work in practice?"
-  }
-]
-
-const SUGGESTED_ACTIONS = [
-  "Explain simpler",
-  "Show an example",
-  "Give me a hint",
-  "Quiz me"
-]
-
 export default function AITutor() {
-  const [messages, setMessages] = useState<Message[]>(INITIAL_MESSAGES)
-  const [input, setInput] = useState("")
+  const { user } = useAuth()
+  const [messages, setMessages] = useState<Message[]>([
+    {
+      id: '1',
+      role: 'assistant',
+      content: `Hello ${user?.name ? user.name.split(' ')[0] : 'there'}! I'm your AI Tutor. I can help explain difficult concepts, provide practice problems, or guide you through your curriculum. What would you like to focus on today?`
+    }
+  ])
+  const [input, setInput] = useState('')
   const [isTyping, setIsTyping] = useState(false)
-  const messagesEndRef = useRef<HTMLDivElement>(null)
+  const bottomRef = useRef<HTMLDivElement>(null)
 
-  const scrollToBottom = () => {
-    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' })
-  }
-
+  // Auto-scroll to bottom
   useEffect(() => {
-    scrollToBottom()
+    bottomRef.current?.scrollIntoView({ behavior: 'smooth' })
   }, [messages, isTyping])
 
-  const handleSend = (text: string) => {
-    if (!text.trim()) return
+  const handleSend = async () => {
+    if (!input.trim()) return
 
-    // Add user message
-    const newUserMsg: Message = { id: Date.now().toString(), role: 'user', content: text }
-    setMessages(prev => [...prev, newUserMsg])
-    setInput("")
+    const userMsg: Message = { id: Date.now().toString(), role: 'user', content: input.trim() }
+    setMessages(prev => [...prev, userMsg])
+    setInput('')
     setIsTyping(true)
 
-    // Simulate AI response
+    // Simulate network delay / AI generation
     setTimeout(() => {
-      let aiResponse = "That's a great question about base cases. Essentially, you always want to check for the simplest possible input (like n == 0) and return immediately without recursing further."
-      
-      if (text === "Show an example") {
-        aiResponse = "Sure! Here is a classic example using Factorial:\n\n```python\ndef factorial(n):\n    # This is the base case\n    if n == 1:\n        return 1\n    # This is the recursive step\n    return n * factorial(n - 1)\n```\n\nNotice how the function stops calling itself when `n` reaches 1."
-      } else if (text === "Explain simpler") {
-        aiResponse = "Think of a base case like hitting the bottom of a swimming pool. If you keep diving without knowing where the bottom is, you'll never stop. The base case is the bottom—it tells the function 'you've gone deep enough, time to head back up'."
-      }
-
-      setMessages(prev => [...prev, { id: (Date.now() + 1).toString(), role: 'ai', content: aiResponse }])
       setIsTyping(false)
+      setMessages(prev => [
+        ...prev,
+        {
+          id: (Date.now() + 1).toString(),
+          role: 'assistant',
+          content: "I'm currently running in demonstration mode. In a full production environment, this would connect to the NVIDIA NIM API to provide deep, concept-aware tutoring based on your specific curriculum and mastery data."
+        }
+      ])
     }, 1500)
   }
 
-  return (
-    <div className="flex flex-col h-[calc(100vh-2rem)] max-w-4xl mx-auto -mt-6">
-      
-      {/* Context Header */}
-      <header className="py-6 border-b border-border/30 flex flex-col md:flex-row md:items-center justify-between gap-4 sticky top-0 bg-background/95 backdrop-blur-md z-10">
-        <div className="flex items-center space-x-2 text-sm font-medium tracking-wide">
-          <span className="text-text-muted">Python</span>
-          <ChevronRight className="w-4 h-4 text-border" />
-          <span className="text-text-muted">Recursion</span>
-          <ChevronRight className="w-4 h-4 text-border" />
-          <span className="text-primary bg-primary/10 px-2 py-0.5 rounded-md">Base Cases</span>
-        </div>
-        <div className="flex items-center text-xs text-text-muted font-medium bg-surface/50 px-3 py-1.5 rounded-full border border-border/50">
-          <Sparkles className="w-3.5 h-3.5 mr-2 text-primary" />
-          AI Tutor Active
-        </div>
-      </header>
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault()
+      handleSend()
+    }
+  }
 
-      {/* Conversation Area */}
-      <div className="flex-1 overflow-y-auto py-8 space-y-8 scrollbar-hide">
-        {messages.map((msg) => (
-          <div 
-            key={msg.id} 
-            className={cn(
-              "flex gap-6 max-w-3xl",
-              msg.role === 'user' ? "ml-auto" : ""
-            )}
-          >
-            {msg.role === 'ai' && (
-              <div className="flex-shrink-0 mt-1">
-                <div className="w-8 h-8 rounded-full bg-primary/20 flex items-center justify-center border border-primary/30">
-                  <BrainCircuit className="w-4 h-4 text-primary" />
-                </div>
-              </div>
-            )}
-            
-            <div className={cn(
-              "prose prose-invert prose-p:leading-relaxed max-w-none text-[1.05rem]",
-              msg.role === 'user' ? "bg-surface/60 border border-border/50 px-6 py-4 rounded-2xl rounded-tr-sm text-white" : "text-white/90 pt-1.5"
-            )}>
-              {/* Very basic markdown simulation for the example code block */}
-              {msg.content.includes("```") ? (
-                <div>
-                  <p>{msg.content.split("```")[0]}</p>
-                  <pre className="bg-[#0d1117] p-4 rounded-xl border border-border/50 my-4 text-sm font-mono text-primary-hover overflow-x-auto">
-                    <code>{msg.content.split("```")[1].replace("python\n", "")}</code>
-                  </pre>
-                  <p>{msg.content.split("```")[2]}</p>
-                </div>
-              ) : (
-                <p>{msg.content}</p>
+  return (
+    <div className="h-[calc(100vh-6rem)] md:h-[calc(100vh-4rem)] flex flex-col max-w-4xl mx-auto animate-fade-in relative z-10">
+      
+      {/* Header */}
+      <div className="flex items-center gap-4 py-4 md:py-6 border-b border-border/40 shrink-0">
+        <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-primary to-purple-500 flex items-center justify-center shadow-glow-primary shrink-0 relative">
+          <BrainCircuit className="w-6 h-6 text-text-main" />
+          <div className="absolute -bottom-1 -right-1 w-4 h-4 bg-success rounded-full border-2 border-background" />
+        </div>
+        <div>
+          <h1 className="text-xl md:text-2xl font-bold text-text-main tracking-tight flex items-center gap-2">
+            ConceptIQ Tutor <Sparkles className="w-4 h-4 text-primary" />
+          </h1>
+          <p className="text-sm text-text-muted">Powered by AI · Always online</p>
+        </div>
+      </div>
+
+      {/* Chat Area */}
+      <div className="flex-1 overflow-y-auto py-6 space-y-6 scrollbar-hide">
+        {messages.map((msg) => {
+          const isUser = msg.role === 'user'
+          return (
+            <div 
+              key={msg.id} 
+              className={cn(
+                "flex w-full gap-4 max-w-[85%]",
+                isUser ? "ml-auto flex-row-reverse" : "mr-auto"
               )}
-            </div>
-            
-            {msg.role === 'user' && (
-              <div className="flex-shrink-0 mt-1">
-                <div className="w-8 h-8 rounded-full bg-surface border border-border/50 flex items-center justify-center">
-                  <User className="w-4 h-4 text-text-muted" />
-                </div>
+            >
+              <div className={cn(
+                "w-8 h-8 rounded-full flex items-center justify-center shrink-0 mt-1 shadow-sm",
+                isUser ? "bg-surface border border-text-main/10" : "bg-gradient-to-br from-primary/20 to-purple-500/20 border border-primary/20 text-primary"
+              )}>
+                {isUser ? <User className="w-4 h-4 text-text-muted" /> : <Bot className="w-4 h-4" />}
               </div>
-            )}
-          </div>
-        ))}
+              
+              <div className={cn(
+                "px-5 py-4 rounded-[24px] text-[15px] leading-relaxed relative",
+                isUser 
+                  ? "bg-primary text-text-main rounded-tr-sm shadow-nav-pill" 
+                  : "bg-surface/50 border border-text-main/5 text-text-main/90 rounded-tl-sm glass"
+              )}>
+                {msg.content}
+              </div>
+            </div>
+          )
+        })}
         
-        {/* Thinking State */}
         {isTyping && (
-          <div className="flex gap-6 max-w-3xl animate-fade-in">
-            <div className="flex-shrink-0 mt-1">
-              <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center">
-                <BrainCircuit className="w-4 h-4 text-primary/50" />
-              </div>
+          <div className="flex w-full gap-4 max-w-[85%] mr-auto animate-fade-in">
+            <div className="w-8 h-8 rounded-full bg-gradient-to-br from-primary/20 to-purple-500/20 border border-primary/20 text-primary flex items-center justify-center shrink-0 mt-1">
+              <Bot className="w-4 h-4" />
             </div>
-            <div className="pt-2.5 flex space-x-1.5">
-              <div className="w-2 h-2 rounded-full bg-primary/40 animate-bounce" style={{ animationDelay: '0ms' }} />
-              <div className="w-2 h-2 rounded-full bg-primary/40 animate-bounce" style={{ animationDelay: '150ms' }} />
-              <div className="w-2 h-2 rounded-full bg-primary/40 animate-bounce" style={{ animationDelay: '300ms' }} />
+            <div className="px-5 py-4 rounded-[24px] rounded-tl-sm bg-surface/50 border border-text-main/5 glass flex items-center gap-1.5 h-12 w-20">
+              <span className="w-2 h-2 rounded-full bg-primary/60 animate-bounce-soft" style={{ animationDelay: '0ms' }} />
+              <span className="w-2 h-2 rounded-full bg-primary/60 animate-bounce-soft" style={{ animationDelay: '150ms' }} />
+              <span className="w-2 h-2 rounded-full bg-primary/60 animate-bounce-soft" style={{ animationDelay: '300ms' }} />
             </div>
           </div>
         )}
-        
-        <div ref={messagesEndRef} className="h-4" />
+        <div ref={bottomRef} className="h-4" />
       </div>
 
       {/* Input Area */}
-      <div className="pt-4 pb-8 bg-background">
-        {/* Suggested Actions */}
-        {!isTyping && messages[messages.length - 1].role === 'ai' && (
-          <div className="flex flex-wrap gap-3 mb-6 animate-slide-up">
-            {SUGGESTED_ACTIONS.map(action => (
-              <button
-                key={action}
-                onClick={() => handleSend(action)}
-                className="text-sm font-medium px-4 py-2 rounded-full bg-surface/50 border border-border/50 text-text-muted hover:text-white hover:bg-surface hover:border-primary/50 transition-all"
-              >
-                {action}
-              </button>
-            ))}
-          </div>
-        )}
-
-        <form 
-          onSubmit={(e) => { e.preventDefault(); handleSend(input); }}
-          className="relative flex items-center"
-        >
-          <input
-            type="text"
+      <div className="pt-4 pb-6 shrink-0 bg-background/80 backdrop-blur-xl border-t border-border/40">
+        <div className="relative group">
+          <textarea
             value={input}
             onChange={(e) => setInput(e.target.value)}
-            placeholder="Ask about Base Cases..."
-            className="w-full bg-surface/30 border border-border/50 rounded-2xl py-4 pl-6 pr-14 text-white placeholder:text-text-muted focus:outline-none focus:border-primary/50 focus:bg-surface/50 transition-all text-lg"
+            onKeyDown={handleKeyDown}
+            placeholder="Ask about a concept..."
+            className="w-full pl-5 pr-14 py-4 bg-surface/50 border border-text-main/10 rounded-2xl text-[15px] text-text-main placeholder-text-muted focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary/50 transition-all resize-none shadow-sm h-14 overflow-hidden leading-tight glass"
+            rows={1}
           />
           <button
-            type="submit"
+            onClick={handleSend}
             disabled={!input.trim() || isTyping}
-            className="absolute right-3 p-2.5 rounded-xl bg-primary text-background disabled:opacity-50 disabled:cursor-not-allowed hover:bg-primary-hover transition-colors"
+            className="absolute right-2 top-2 bottom-2 aspect-square rounded-xl bg-primary flex items-center justify-center text-text-main disabled:opacity-50 disabled:bg-surface disabled:text-text-muted transition-all hover:bg-primary-hover shadow-glow-primary disabled:shadow-none"
           >
-            {isTyping ? <Loader2 className="w-5 h-5 animate-spin" /> : <Send className="w-5 h-5" />}
+            <Send className="w-4 h-4 ml-0.5" />
           </button>
-        </form>
+        </div>
         <div className="text-center mt-3">
-          <span className="text-xs text-text-muted/60">ConceptIQ AI can make mistakes. Verify important technical details.</span>
+          <span className="text-[11px] text-text-muted font-medium">AI can make mistakes. Verify important information.</span>
         </div>
       </div>
+
     </div>
   )
 }

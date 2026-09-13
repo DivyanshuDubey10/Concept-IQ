@@ -43,7 +43,7 @@ export default function ForgotPassword() {
       {/* Brand */}
       <div className="flex items-center gap-2 mb-10">
         <BrainCircuit className="w-7 h-7 text-primary" />
-        <span className="text-xl font-bold tracking-tight text-white">ConceptIQ</span>
+        <span className="text-xl font-bold tracking-tight text-text-main">ConceptIQ</span>
       </div>
 
       <div className="w-full max-w-sm">
@@ -55,9 +55,9 @@ export default function ForgotPassword() {
               <CheckCircle2 className="w-8 h-8 text-primary" />
             </div>
             <div>
-              <h1 className="!text-2xl font-bold text-white !mb-2">Check your inbox</h1>
-              <p className="text-sm text-white/50 leading-relaxed !mb-0">
-                If <span className="text-white/80 font-medium">{email}</span> is registered,
+              <h1 className="!text-2xl font-bold text-text-main !mb-2">Check your inbox</h1>
+              <p className="text-sm text-text-main/50 leading-relaxed !mb-0">
+                If <span className="text-text-main/80 font-medium">{email}</span> is registered,
                 we've sent a link to reset your password. Check your spam folder if it doesn't arrive.
               </p>
             </div>
@@ -77,8 +77,8 @@ export default function ForgotPassword() {
               <div className="w-14 h-14 rounded-full bg-primary/10 flex items-center justify-center mx-auto mb-5">
                 <Mail className="w-7 h-7 text-primary" />
               </div>
-              <h1 className="!text-2xl font-bold text-white !mb-2">Forgot your password?</h1>
-              <p className="text-sm text-white/50 leading-relaxed !mb-0">
+              <h1 className="!text-2xl font-bold text-text-main !mb-2">Forgot your password?</h1>
+              <p className="text-sm text-text-main/50 leading-relaxed !mb-0">
                 Enter your email address and we'll send you a link to reset your password.
               </p>
             </div>
@@ -100,13 +100,13 @@ export default function ForgotPassword() {
                 value={email}
                 onChange={e => setEmail(e.target.value)}
                 disabled={status === 'loading'}
-                className="w-full px-4 py-3 rounded-xl bg-surface/60 border border-white/10 text-white placeholder-white/30 text-sm focus:outline-none focus:border-primary/60 focus:ring-1 focus:ring-primary/40 transition-colors disabled:opacity-50"
+                className="w-full px-4 py-3 rounded-xl bg-surface/60 border border-text-main/10 text-text-main placeholder-white/30 text-sm focus:outline-none focus:border-primary/60 focus:ring-1 focus:ring-primary/40 transition-colors disabled:opacity-50"
               />
 
               <button
                 type="submit"
                 disabled={status === 'loading'}
-                className="w-full py-3 rounded-full bg-primary text-white text-xs font-bold uppercase tracking-widest hover:bg-primary-hover active:scale-95 transition-all duration-200 flex items-center justify-center gap-2 disabled:opacity-60 disabled:cursor-not-allowed mt-1"
+                className="w-full py-3 rounded-full bg-primary text-text-main text-xs font-bold uppercase tracking-widest hover:bg-primary-hover active:scale-95 transition-all duration-200 flex items-center justify-center gap-2 disabled:opacity-60 disabled:cursor-not-allowed mt-1"
               >
                 {status === 'loading'
                   ? <><Loader2 className="w-4 h-4 animate-spin" /> Sending…</>
@@ -115,7 +115,7 @@ export default function ForgotPassword() {
 
               <Link
                 to="/login"
-                className="flex items-center justify-center gap-1.5 text-xs text-white/40 hover:text-white/70 transition-colors mt-2"
+                className="flex items-center justify-center gap-1.5 text-xs text-text-main/40 hover:text-text-main/70 transition-colors mt-2"
               >
                 <ArrowLeft className="w-3.5 h-3.5" />
                 Back to sign in

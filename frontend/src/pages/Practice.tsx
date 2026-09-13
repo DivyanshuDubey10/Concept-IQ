@@ -113,9 +113,9 @@ export default function Practice() {
     return (
       <div className="min-h-screen bg-background flex flex-col items-center justify-center p-6 space-y-6 text-center">
         <AlertCircle className="w-12 h-12 text-error" />
-        <h2 className="text-2xl font-bold text-white">Could not load session</h2>
+        <h2 className="text-2xl font-bold text-text-main">Could not load session</h2>
         <p className="text-text-muted max-w-md">{error}</p>
-        <Button onClick={() => navigate('/learn')} variant="outline">Back to Library</Button>
+        <Button onClick={() => navigate('/learn')} variant="secondary">Back to Library</Button>
       </div>
     )
   }
@@ -127,7 +127,7 @@ export default function Practice() {
           <Activity className="w-12 h-12" />
         </div>
         <div className="space-y-4">
-          <h1 className="text-4xl font-bold text-white tracking-tight">Session Complete</h1>
+          <h1 className="text-4xl font-bold text-text-main tracking-tight">Session Complete</h1>
           <p className="text-text-muted text-lg max-w-md mx-auto">
             You've exhausted the question bank for this session. Your mastery has been updated to {mastery}%.
           </p>
@@ -156,14 +156,14 @@ export default function Practice() {
       {/* Top Bar */}
       <header className="px-6 py-5 flex items-center justify-between border-b border-border/50 bg-surface/30 backdrop-blur-md sticky top-0 z-40">
         <div className="flex items-center space-x-6">
-          <div className="text-white font-medium text-lg">
+          <div className="text-text-main font-medium text-lg">
             {conceptName}
           </div>
           <div className="hidden sm:flex items-center gap-3 pl-6 border-l border-border/50">
             <span className="text-text-muted text-sm font-medium uppercase tracking-widest">Mastery</span>
             <div className="w-32 flex items-center gap-3">
               <Progress value={mastery} indicatorClassName="bg-primary transition-all duration-700" className="h-1.5" />
-              <span className="text-white text-sm font-bold min-w-[2.5rem]">{mastery}%</span>
+              <span className="text-text-main text-sm font-bold min-w-[2.5rem]">{mastery}%</span>
             </div>
           </div>
         </div>
@@ -171,7 +171,7 @@ export default function Practice() {
         <Button 
           variant="ghost"
           onClick={handleExit}
-          className="text-text-muted hover:text-white"
+          className="text-text-muted hover:text-text-main"
         >
           End Session & View Progress
         </Button>
@@ -191,7 +191,7 @@ export default function Practice() {
             </span>
           </div>
 
-          <h2 className="text-3xl md:text-4xl font-semibold text-white leading-tight">
+          <h2 className="text-3xl md:text-4xl font-semibold text-text-main leading-tight">
             {currentQuestion.text}
           </h2>
 
@@ -228,7 +228,7 @@ export default function Practice() {
                     !hasSubmitted && !isSubmitting && "cursor-pointer"
                   )}
                 >
-                  <span className={cn("font-medium", hasSubmitted && isCorrectAnswer ? "text-success" : "text-white")}>
+                  <span className={cn("font-medium", hasSubmitted && isCorrectAnswer ? "text-success" : "text-text-main")}>
                     {option.text}
                   </span>
                   {icon}
@@ -251,7 +251,7 @@ export default function Practice() {
                     {isCorrect ? <CheckCircle2 className="mr-2 w-6 h-6" /> : <TrendingDown className="mr-2 w-6 h-6" />}
                     {isCorrect ? "Correct" : "Not quite"}
                   </div>
-                  <p className="text-white/80 leading-relaxed text-lg">
+                  <p className="text-text-main/80 leading-relaxed text-lg">
                     {submitResult.ai_explanation}
                   </p>
                 </div>
@@ -294,7 +294,7 @@ export default function Practice() {
           ) : (
             <Button 
               onClick={handleNext} 
-              className="w-full md:w-64 text-lg py-6 bg-white text-background hover:bg-white/90 group"
+              className="w-full md:w-64 text-lg py-6 bg-text-main text-background hover:bg-text-main/90 group"
             >
               {hasMoreQuestions ? 'Next Question' : 'Complete Session'} <ArrowRight className="ml-2 w-5 h-5 transition-transform group-hover:translate-x-1" />
             </Button>

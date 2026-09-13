@@ -1,178 +1,170 @@
 import { useState, useEffect } from 'react'
-import { Calendar, CheckCircle2, ArrowRight, Loader2, Sparkles, AlertCircle } from 'lucide-react'
+import { CalendarSync, CheckCircle2, Clock, Brain, Loader2, Play } from 'lucide-react'
 import { getTodayRevision, completeRevision } from '../lib/api/revision'
 import type { RevisionItem } from '../lib/api/revision'
+import { Card, CardContent } from '../components/ui/card'
 import { Button } from '../components/ui/button'
-import { cn } from '../lib/utils'
 import { Progress } from '../components/ui/progress'
+import { cn } from '../lib/utils'
 
 export default function Revision() {
-  const [items, setItems] = useState<(RevisionItem & { completed_at?: string })[]>([])
-  const [isLoadingInitial, setIsLoadingInitial] = useState(true)
-  const [error, setError] = useState<string | null>(null)
-  const [processingId, setProcessingId] = useState<number | null>(null)
+  const [items, setItems] = useState<RevisionItem[]>([])
+  const [loading, setLoading] = useState(true)
+  const [completingId, setCompletingId] = useState<number | null>(null)
 
   useEffect(() => {
-    async function fetchRevision() {
+    async function load() {
       try {
-        setIsLoadingInitial(true)
         const data = await getTodayRevision()
         setItems(data)
-      } catch (err: any) {
-        console.error('Failed to fetch revision queue:', err)
-        setError(err.message || 'Failed to load revision queue')
+      } catch (err) {
+        console.error(err)
       } finally {
-        setIsLoadingInitial(false)
+        setLoading(false)
       }
     }
-    fetchRevision()
+    load()
   }, [])
 
-  const handleReview = async (id: number) => {
-    setProcessingId(id)
+  const handleComplete = async (conceptId: number) => {
     try {
-      const response = await completeRevision(id)
-      setItems(prev => prev.map(item => 
-        item.concept_id === id ? { ...item, completed_at: response.next_revision_date } : item
-      ))
-    } catch (err: any) {
-      console.error('Failed to complete revision:', err)
-      // Normally we'd show a toast here
-    } finally {
-      setProcessingId(null)
+      setCompletingId(conceptId)
+      await completeRevision(conceptId)
+      // Optimistically remove from list with a slight delay for animation
+      setTimeout(() => {
+        setItems(prev => prev.filter(i => i.concept_id !== conceptId))
+        setCompletingId(null)
+      }, 500)
+    } catch (err) {
+      console.error(err)
+      setCompletingId(null)
     }
   }
 
-  if (isLoadingInitial) {
+  if (loading) {
     return (
-      <div className="flex flex-col items-center justify-center h-[60vh] space-y-4">
-        <Loader2 className="w-8 h-8 text-primary animate-spin" />
-        <p className="text-text-muted">Loading today's revision queue...</p>
+      <div className="flex flex-col items-center justify-center min-h-[60vh] space-y-4">
+        <Loader2 className="w-8 h-8 animate-spin text-primary" />
+        <p className="text-text-muted text-sm font-medium">Loading your revision schedule...</p>
       </div>
     )
   }
-
-  if (error) {
-    return (
-      <div className="flex flex-col items-center justify-center h-[60vh] space-y-4">
-        <AlertCircle className="w-8 h-8 text-error" />
-        <p className="text-error font-medium">{error}</p>
-      </div>
-    )
-  }
-
-  const allCompleted = items.length > 0 && items.every(i => i.completed_at != null)
-  const noItems = items.length === 0
 
   return (
-    <div className="max-w-3xl mx-auto space-y-10 py-8 animate-fade-in">
+    <div className="space-y-10 animate-fade-in max-w-4xl mx-auto pb-20">
       
-      <div className="space-y-3">
-        <h1 className="text-4xl font-bold tracking-tight text-white">
-          Today's revision
-        </h1>
-        <p className="text-lg text-text-muted">
-          A few concepts worth revisiting today.
+      {/* Header */}
+      <div className="space-y-4 relative z-10 text-center md:text-left">
+        <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-primary/10 border border-primary/20 text-primary text-xs font-bold uppercase tracking-widest shadow-glow-primary">
+          <CalendarSync className="w-4 h-4" /> Spaced Repetition
+        </div>
+        <h1 className="text-4xl md:text-6xl font-bold tracking-tight text-text-main mb-0">Daily Review</h1>
+        <p className="text-text-muted text-lg max-w-2xl mx-auto md:mx-0">
+          Concepts fading from memory are queued here. Review them at the optimal time to maximize long-term retention.
         </p>
       </div>
 
-      {allCompleted ? (
-        <div className="bg-success/5 border border-success/20 rounded-2xl p-10 text-center space-y-6 animate-slide-up">
-          <div className="w-20 h-20 bg-success/10 rounded-full flex items-center justify-center mx-auto">
-            <Sparkles className="w-10 h-10 text-success" />
-          </div>
-          <div className="space-y-2">
-            <h2 className="text-2xl font-semibold text-white">All caught up!</h2>
-            <p className="text-text-muted">You've completed all your revision tasks for today.</p>
-          </div>
-        </div>
-      ) : noItems ? (
-        <div className="bg-surface/30 border border-border/50 rounded-2xl p-10 text-center space-y-4">
-          <Calendar className="w-12 h-12 text-text-muted/50 mx-auto" />
-          <h2 className="text-xl font-medium text-white">Nothing to review</h2>
-          <p className="text-text-muted">Your spaced repetition queue is empty.</p>
-        </div>
+      {items.length === 0 ? (
+        <Card className="border-0 bg-transparent relative overflow-hidden group mt-10">
+          <div className="absolute inset-0 bg-gradient-surface rounded-[32px] border border-text-main/5 shadow-premium glass-elevated" />
+          <CardContent className="p-16 relative z-10 flex flex-col items-center text-center space-y-6">
+            <div className="w-24 h-24 rounded-full bg-success/10 flex items-center justify-center shadow-glow-success">
+              <CheckCircle2 className="w-12 h-12 text-success" />
+            </div>
+            <div className="space-y-2">
+              <h2 className="text-3xl font-bold text-text-main">All caught up!</h2>
+              <p className="text-text-muted text-lg max-w-sm mx-auto">
+                You've completed all scheduled reviews for today. Great job maintaining your neural pathways.
+              </p>
+            </div>
+          </CardContent>
+        </Card>
       ) : (
         <div className="space-y-4">
-          {items.map(item => {
-            const isCompleted = item.completed_at != null
-            const isProcessing = processingId === item.concept_id
+          <div className="flex items-center justify-between mb-6 px-1">
+            <h3 className="text-sm font-bold text-text-muted uppercase tracking-widest flex items-center gap-2">
+              <Clock className="w-4 h-4" /> Due Today
+            </h3>
+            <span className="text-xs font-bold px-2.5 py-1 rounded-md bg-text-main/10 text-text-main">
+              {items.length} Remaining
+            </span>
+          </div>
 
+          {items.map(item => {
+            const isCompleting = completingId === item.concept_id
+            
             return (
-              <div 
-                key={item.concept_id}
+              <Card 
+                key={item.concept_id} 
                 className={cn(
-                  "relative overflow-hidden border rounded-2xl p-6 transition-all duration-500",
-                  isCompleted ? "bg-surface/10 border-success/20" : "bg-surface/40 border-border/50 hover:border-primary/40",
-                  isProcessing ? "opacity-70 pointer-events-none" : ""
+                  "border-text-main/5 bg-surface/30 backdrop-blur-md hover:bg-surface-elevated transition-all duration-300 rounded-[20px] overflow-hidden",
+                  isCompleting && "opacity-50 scale-[0.98] blur-[2px]"
                 )}
               >
-                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-6">
-                  
-                  {/* Left Side: Info */}
-                  <div className="space-y-4 flex-1">
-                    <div>
-                      <div className="text-xs font-semibold uppercase tracking-wider text-text-muted mb-1">
-                        {item.topic_name || 'General'}
-                      </div>
-                      <h3 className={cn("text-xl font-semibold", isCompleted ? "text-white/60 line-through decoration-white/20" : "text-white")}>
-                        {item.name}
-                      </h3>
-                    </div>
-                    
-                    {!isCompleted && (
-                      <div className="flex items-center gap-4 w-48">
-                        <Progress value={item.current_mastery} className="h-1.5" />
-                        <span className="text-sm font-medium text-text-muted">{item.current_mastery}%</span>
-                      </div>
-                    )}
-                  </div>
-
-                  {/* Right Side: Status/Action */}
-                  <div className="flex-shrink-0 flex sm:flex-col items-center sm:items-end justify-between sm:justify-center gap-4">
-                    {isCompleted ? (
-                      <>
-                        <div className="flex items-center text-success font-medium">
-                          <CheckCircle2 className="w-5 h-5 mr-2" />
-                          Revision complete
-                        </div>
-                        <div className="text-sm text-text-muted">
-                          Next review <span className="text-white">{item.completed_at}</span>
-                        </div>
-                      </>
-                    ) : (
-                      <>
-                        <div className="flex items-center text-warning font-medium text-sm bg-warning/10 px-3 py-1 rounded-full">
-                          <Calendar className="w-4 h-4 mr-2" />
-                          Due today
-                        </div>
-                        <Button 
-                          onClick={() => handleReview(item.concept_id)}
-                          className="group"
-                          disabled={isProcessing}
-                        >
-                          {isProcessing ? (
-                            <><Loader2 className="w-4 h-4 mr-2 animate-spin" /> Starting...</>
-                          ) : (
-                            <>Review <ArrowRight className="w-4 h-4 ml-2 transition-transform group-hover:translate-x-1" /></>
-                          )}
-                        </Button>
-                      </>
-                    )}
-                  </div>
-                  
-                </div>
-                
-                {/* Completed subtle glow */}
-                {isCompleted && (
-                  <div className="absolute inset-0 bg-gradient-to-r from-transparent via-success/5 to-transparent animate-shimmer pointer-events-none" />
+                {/* Shimmer effect for lowest mastery items to draw attention */}
+                {item.current_mastery < 50 && (
+                  <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-error/50 to-transparent animate-shimmer" />
                 )}
-              </div>
+                
+                <CardContent className="p-6 md:p-8 flex flex-col md:flex-row items-center gap-6">
+                  
+                  {/* Icon */}
+                  <div className="w-14 h-14 rounded-2xl bg-text-main/5 border border-text-main/10 text-text-muted flex items-center justify-center shrink-0">
+                    <Brain className="w-6 h-6" />
+                  </div>
+                  
+                  {/* Content */}
+                  <div className="flex-1 text-center md:text-left min-w-0 w-full">
+                    <div className="text-xs font-bold text-primary uppercase tracking-widest mb-1.5">
+                      {item.topic_name || "General"}
+                    </div>
+                    <h3 className="text-xl font-bold text-text-main truncate mb-4">{item.name}</h3>
+                    
+                    <div className="flex items-center gap-4 max-w-sm mx-auto md:mx-0">
+                      <Progress 
+                        value={item.current_mastery} 
+                        className="h-1.5 bg-background flex-1"
+                        indicatorClassName={
+                          item.current_mastery >= 80 ? "bg-success" : 
+                          item.current_mastery >= 50 ? "bg-primary" : "bg-error"
+                        }
+                      />
+                      <span className="text-sm font-mono font-medium text-text-muted w-10 text-right">
+                        {item.current_mastery}%
+                      </span>
+                    </div>
+                  </div>
+                  
+                  {/* Action */}
+                  <div className="w-full md:w-auto mt-4 md:mt-0 shrink-0">
+                    <Button 
+                      onClick={() => handleComplete(item.concept_id)}
+                      disabled={isCompleting}
+                      className={cn(
+                        "w-full md:w-40 h-12 rounded-xl font-semibold transition-all shadow-glow-primary",
+                        isCompleting ? "bg-success hover:bg-success text-text-main" : ""
+                      )}
+                    >
+                      {isCompleting ? (
+                        <>
+                          <CheckCircle2 className="w-5 h-5 mr-2" />
+                          Done
+                        </>
+                      ) : (
+                        <>
+                          <Play className="w-4 h-4 mr-2 fill-current" />
+                          Review Now
+                        </>
+                      )}
+                    </Button>
+                  </div>
+                  
+                </CardContent>
+              </Card>
             )
           })}
         </div>
       )}
-
     </div>
   )
 }

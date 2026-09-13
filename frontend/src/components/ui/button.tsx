@@ -9,10 +9,10 @@ const buttonVariants = cva(
     variants: {
       variant: {
         default: "bg-primary text-primary-foreground hover:bg-primary-hover shadow-glow-primary",
-        secondary: "bg-surface text-text-main hover:bg-white/10 border border-white/10",
-        ghost: "hover:bg-white/10 text-text-main",
-        success: "bg-success text-white shadow-glow-success hover:bg-success/90",
-        error: "bg-error text-white shadow-glow-error hover:bg-error/90",
+        secondary: "bg-surface text-text-main hover:bg-text-main/10 border border-text-main/10",
+        ghost: "hover:bg-text-main/10 text-text-main",
+        success: "bg-success text-text-main shadow-glow-success hover:bg-success/90",
+        error: "bg-error text-text-main shadow-glow-error hover:bg-error/90",
       },
       size: {
         default: "h-12 px-6 py-2",
