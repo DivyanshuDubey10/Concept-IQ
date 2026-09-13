@@ -19,5 +19,7 @@ def generate_targeted_question(
         "mastery": mastery,
         "difficulty": difficulty,
         "question": generated["question"],
-        "options": generated["options"]
+        "options": generated["options"],
+        "correct_answer": generated["correct_answer"],
+        "explanation": generated["explanation"]
     }
