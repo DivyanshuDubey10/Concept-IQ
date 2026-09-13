@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from 'react'
-import { Send, BrainCircuit, User, Sparkles, Bot, AlertCircle, Plus, MessageSquare, Trash2, Menu, X } from 'lucide-react'
+import { Send, BrainCircuit, User, Sparkles, Bot, AlertCircle, Plus, MessageSquare, Trash2, Menu, X, MoreHorizontal, Copy, Edit2, Trash } from 'lucide-react'
 import { useAuth } from '../lib/contexts/AuthContext'
 import { cn } from '../lib/utils'
 import { sendChatMessage, getChatSessions, getChatMessages, deleteChatSession, type ChatMessage, type ChatSession } from '../lib/api/tutor'
@@ -26,7 +26,39 @@ export default function AITutor() {
   const [messages, setMessages] = useState<Message[]>([])
   const [input, setInput] = useState('')
   const [isTyping, setIsTyping] = useState(false)
+  const [openMenuId, setOpenMenuId] = useState<string | null>(null)
   const bottomRef = useRef<HTMLDivElement>(null)
+
+  // Close menu on outside click
+  useEffect(() => {
+    const closeMenu = () => setOpenMenuId(null)
+    window.addEventListener('click', closeMenu)
+    return () => window.removeEventListener('click', closeMenu)
+  }, [])
+
+  const handleCopyMessage = (content: string) => {
+    navigator.clipboard.writeText(content)
+    setOpenMenuId(null)
+  }
+
+  const handleDeleteMessage = (id: string) => {
+    // In a real app, you would delete from the backend here.
+    // For now, we'll just remove it from local state.
+    setMessages(prev => prev.filter(m => m.id !== id))
+    setOpenMenuId(null)
+  }
+
+  const handleEditMessage = (id: string, content: string) => {
+    // Basic local edit behavior: copy to input, remove message and its replies.
+    // In a real app, you'd branch the conversation or PUT to an endpoint.
+    setInput(content)
+    setMessages(prev => {
+      const idx = prev.findIndex(m => m.id === id)
+      if (idx === -1) return prev
+      return prev.slice(0, idx)
+    })
+    setOpenMenuId(null)
+  }
 
   const defaultGreeting: Message = {
     id: 'default-1',
@@ -282,7 +314,7 @@ export default function AITutor() {
                   </div>
                   
                   <div className={cn(
-                    "px-4 md:px-5 py-3 md:py-4 rounded-[24px] text-[14px] md:text-[15px] leading-relaxed relative",
+                    "px-4 md:px-5 py-3 md:py-4 rounded-[24px] text-[14px] md:text-[15px] leading-relaxed relative group/msg transition-all",
                     isUser 
                       ? "bg-primary text-text-main rounded-tr-sm shadow-nav-pill" 
                       : msg.isError
@@ -295,6 +327,48 @@ export default function AITutor() {
                       </div>
                     ) : (
                       msg.content
+                    )}
+
+                    {/* 3-Dot Menu */}
+                    {msg.id !== 'default-1' && (
+                      <div className={cn(
+                        "absolute top-1/2 -translate-y-1/2 md:opacity-0 group-hover/msg:opacity-100 transition-opacity z-10",
+                        isUser ? "-left-10" : "-right-10",
+                        openMenuId === msg.id ? "opacity-100" : "opacity-0 md:opacity-0"
+                      )}>
+                        <button 
+                          className={cn(
+                            "p-1.5 rounded-full hover:bg-surface-elevated transition-colors",
+                            isUser ? "text-text-muted hover:text-text-main" : "text-text-muted hover:text-primary"
+                          )}
+                          onClick={(e) => { e.stopPropagation(); setOpenMenuId(openMenuId === msg.id ? null : msg.id); }}
+                        >
+                          <MoreHorizontal className="w-5 h-5" />
+                        </button>
+                        
+                        {/* Dropdown menu */}
+                        {openMenuId === msg.id && (
+                          <div 
+                            className={cn(
+                              "absolute top-full mt-1 w-32 bg-surface border border-border/50 rounded-xl shadow-xl py-1 z-50 flex flex-col overflow-hidden animate-in fade-in zoom-in duration-200",
+                              isUser ? "right-0 origin-top-right" : "left-0 origin-top-left"
+                            )}
+                            onClick={e => e.stopPropagation()}
+                          >
+                            <button onClick={() => handleCopyMessage(msg.content)} className="w-full flex items-center gap-2 px-3 py-2 text-xs text-text-main hover:bg-surface-elevated transition-colors text-left">
+                              <Copy className="w-3.5 h-3.5" /> Copy
+                            </button>
+                            {isUser && (
+                              <button onClick={() => handleEditMessage(msg.id, msg.content)} className="w-full flex items-center gap-2 px-3 py-2 text-xs text-text-main hover:bg-surface-elevated transition-colors text-left">
+                                <Edit2 className="w-3.5 h-3.5" /> Edit
+                              </button>
+                            )}
+                            <button onClick={() => handleDeleteMessage(msg.id)} className="w-full flex items-center gap-2 px-3 py-2 text-xs text-error hover:bg-error/10 transition-colors text-left">
+                              <Trash className="w-3.5 h-3.5" /> Delete
+                            </button>
+                          </div>
+                        )}
+                      </div>
                     )}
                   </div>
                 </div>
