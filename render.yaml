@@ -8,12 +8,15 @@ services:
     region: oregon  # change to your preferred region
 
     # Run from the project root so 'from backend.app...' imports resolve
-    buildCommand: pip install -r backend/requirements.txt
+    buildCommand: pip install --upgrade pip && pip install -r backend/requirements.txt
     startCommand: uvicorn backend.app.main:app --host 0.0.0.0 --port $PORT
 
     plan: free  # upgrade to 'starter' for production
 
     envVars:
+      - key: PYTHON_VERSION
+        value: "3.11.9"
+
       # Set these in the Render dashboard (do NOT put real values here):
       - key: DATABASE_URL
         sync: false   # set manually in Render dashboard (Supabase URL)
