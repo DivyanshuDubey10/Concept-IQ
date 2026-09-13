@@ -1,6 +1,11 @@
+import os
 from logging.config import fileConfig
 from sqlalchemy import engine_from_config, pool
 from alembic import context
+from dotenv import load_dotenv
+
+# Load .env so DATABASE_URL is available when running locally
+load_dotenv("backend/.env")
 
 # Import the Base and all models so Alembic can detect them
 from backend.app.database import Base
@@ -10,6 +15,13 @@ config = context.config
 
 if config.config_file_name is not None:
     fileConfig(config.config_file_name)
+
+# Override sqlalchemy.url with DATABASE_URL from the environment.
+# This allows Render / local .env to supply the Supabase connection string
+# without changing alembic.ini.
+database_url = os.environ.get("DATABASE_URL")
+if database_url:
+    config.set_main_option("sqlalchemy.url", database_url)
 
 target_metadata = Base.metadata
 

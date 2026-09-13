@@ -1,0 +1,36 @@
+# Render deployment configuration for ConceptIQ backend
+# Docs: https://render.com/docs/blueprint-spec
+
+services:
+  - type: web
+    name: concept-iq-backend
+    runtime: python
+    region: oregon  # change to your preferred region
+
+    # Run from the project root so 'from backend.app...' imports resolve
+    buildCommand: pip install -r backend/requirements.txt
+    startCommand: uvicorn backend.app.main:app --host 0.0.0.0 --port $PORT
+
+    plan: free  # upgrade to 'starter' for production
+
+    envVars:
+      # Set these in the Render dashboard (do NOT put real values here):
+      - key: DATABASE_URL
+        sync: false   # set manually in Render dashboard (Supabase URL)
+
+      - key: SECRET_KEY
+        generateValue: true   # Render auto-generates a secure random value
+
+      - key: ACCESS_TOKEN_EXPIRE_MINUTES
+        value: "10080"
+
+      - key: NVIDIA_API_KEY
+        sync: false   # set manually in Render dashboard
+
+      # Your Vercel frontend URL — update after deploying the frontend
+      - key: FRONTEND_URLS
+        value: "http://localhost:5173,https://your-app.vercel.app"
+
+    # Run Alembic migrations before every deploy
+    # Uncomment after confirming the DB is reachable:
+    # preDeployCommand: alembic -c backend/alembic.ini upgrade head
