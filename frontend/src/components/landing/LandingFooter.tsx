@@ -1,5 +1,7 @@
 import { Link } from 'react-router-dom'
 import { BrainCircuit } from 'lucide-react'
+import { Reveal } from './Reveal'
+
 
 const footerLinks = [
   {
@@ -31,7 +33,7 @@ export function LandingFooter() {
   return (
     <footer className="border-t border-border/40 bg-surface/30" role="contentinfo">
       <div className="max-w-6xl mx-auto px-5 md:px-8 py-12 md:py-16">
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-10">
+        <Reveal className="grid grid-cols-1 md:grid-cols-3 gap-10">
           {/* Brand */}
           <div className="md:col-span-1">
             <div className="flex items-center gap-2.5 mb-3">
@@ -73,17 +75,17 @@ export function LandingFooter() {
               </ul>
             </div>
           ))}
-        </div>
+        </Reveal>
 
         {/* Bottom bar */}
-        <div className="mt-10 pt-6 border-t border-border/30 flex flex-col sm:flex-row items-center justify-between gap-3">
+        <Reveal delay={100} className="mt-10 pt-6 border-t border-border/30 flex flex-col sm:flex-row items-center justify-between gap-3">
           <p className="text-xs text-text-muted/60 !mb-0">
             © {new Date().getFullYear()} ConceptIQ. All rights reserved.
           </p>
           <p className="text-xs text-text-muted/40 !mb-0 italic">
             Built to improve understanding, not just scores.
           </p>
-        </div>
+        </Reveal>
       </div>
     </footer>
   )

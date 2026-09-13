@@ -1,4 +1,5 @@
 import { Progress } from '../ui/progress'
+import { Reveal } from './Reveal'
 
 const concepts = [
   { name: 'Recursive Calls', mastery: 78, color: 'bg-success' },
@@ -31,7 +32,7 @@ export function MasterySection() {
     >
       <div className="max-w-5xl mx-auto grid md:grid-cols-2 gap-12 md:gap-20 items-center">
         {/* Left — text */}
-        <div>
+        <Reveal>
           <p className="text-xs font-semibold uppercase tracking-widest text-primary mb-5">Concept mastery</p>
           <h2
             id="mastery-heading"
@@ -48,10 +49,11 @@ export function MasterySection() {
             Each topic is broken down to its constituent concepts. You see progress at
             that level — not as an average that hides the details.
           </p>
-        </div>
+        </Reveal>
 
         {/* Right — mastery visualization */}
-        <div className="rounded-2xl border border-border/60 bg-surface shadow-premium overflow-hidden">
+        <Reveal delay={100}>
+          <div className="rounded-2xl border border-border/60 bg-surface shadow-premium overflow-hidden">
           {/* Topic header */}
           <div className="px-6 py-5 border-b border-border/40 bg-background/50">
             <div className="flex items-center justify-between">
@@ -86,7 +88,8 @@ export function MasterySection() {
               </p>
             </div>
           </div>
-        </div>
+          </div>
+        </Reveal>
       </div>
     </section>
   )

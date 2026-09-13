@@ -1,4 +1,5 @@
 import { Sparkles, ChevronRight } from 'lucide-react'
+import { Reveal } from './Reveal'
 
 export function AITutorSection() {
   return (
@@ -9,6 +10,7 @@ export function AITutorSection() {
     >
       <div className="max-w-5xl mx-auto grid md:grid-cols-2 gap-12 md:gap-20 items-start">
         {/* Left — demo conversation */}
+        <Reveal delay={80}>
         <div className="rounded-2xl border border-border/60 bg-surface overflow-hidden shadow-premium">
           {/* Header */}
           <div className="flex items-center gap-3 px-5 py-4 border-b border-border/40 bg-background/50">
@@ -81,9 +83,10 @@ export function AITutorSection() {
             </div>
           </div>
         </div>
+        </Reveal>
 
         {/* Right — text */}
-        <div className="md:pt-4">
+        <Reveal delay={0} className="md:pt-4">
           <p className="text-xs font-semibold uppercase tracking-widest text-primary mb-5">AI Tutor</p>
           <h2
             id="tutor-heading"
@@ -100,7 +103,7 @@ export function AITutorSection() {
             Every explanation is grounded in where you are in the learning process — so the
             help you get is relevant, not generic.
           </p>
-        </div>
+        </Reveal>
       </div>
     </section>
   )

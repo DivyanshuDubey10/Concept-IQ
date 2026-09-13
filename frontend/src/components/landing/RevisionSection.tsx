@@ -1,5 +1,6 @@
 import { ChevronRight } from 'lucide-react'
 import { cn } from '../../lib/utils'
+import { Reveal } from './Reveal'
 
 const timeline = [
   { label: 'Today', days: 0, active: true },
@@ -30,7 +31,7 @@ export function RevisionSection() {
       <div className="max-w-5xl mx-auto">
         {/* Header */}
         <div className="grid md:grid-cols-2 gap-12 md:gap-20 items-start">
-          <div>
+          <Reveal>
             <p className="text-xs font-semibold uppercase tracking-widest text-primary mb-5">Spaced repetition</p>
             <h2
               id="revision-heading"
@@ -48,10 +49,10 @@ export function RevisionSection() {
               The stronger your grasp, the longer the interval. The weaker, the sooner
               you'll see it again.
             </p>
-          </div>
+          </Reveal>
 
           {/* Timeline + items */}
-          <div className="space-y-5">
+          <Reveal delay={100} className="space-y-5">
             {/* Timeline strip */}
             <div className="flex items-center gap-0">
               {timeline.map((t, i) => (
@@ -102,7 +103,7 @@ export function RevisionSection() {
                 </div>
               ))}
             </div>
-          </div>
+          </Reveal>
         </div>
       </div>
     </section>

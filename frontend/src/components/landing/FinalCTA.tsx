@@ -1,6 +1,8 @@
 import { Link } from 'react-router-dom'
 import { ArrowRight } from 'lucide-react'
 import { useAuth } from '../../lib/contexts/AuthContext'
+import { Reveal } from './Reveal'
+
 
 export function FinalCTA() {
   const { user } = useAuth()
@@ -11,7 +13,7 @@ export function FinalCTA() {
       className="py-28 md:py-40 px-5 md:px-8"
       aria-labelledby="cta-heading"
     >
-      <div className="max-w-2xl mx-auto text-center">
+      <Reveal className="max-w-2xl mx-auto text-center">
         <h2
           id="cta-heading"
           className="text-4xl md:text-5xl lg:text-[56px] font-bold text-text-main tracking-tight leading-tight !mb-5"
@@ -42,7 +44,7 @@ export function FinalCTA() {
             </Link>
           )}
         </div>
-      </div>
+      </Reveal>
     </section>
   )
 }
