@@ -3,6 +3,7 @@ import { Send, BrainCircuit, User, Sparkles, Bot, AlertCircle } from 'lucide-rea
 import { useAuth } from '../lib/contexts/AuthContext'
 import { cn } from '../lib/utils'
 import { sendChatMessage, type ChatMessage } from '../lib/api/tutor'
+import ReactMarkdown from 'react-markdown'
 
 interface Message {
   id: string
@@ -127,7 +128,13 @@ export default function AITutor() {
                   ? "bg-red-500/10 border border-red-500/20 text-red-400 rounded-tl-sm glass"
                   : "bg-surface/50 border border-text-main/5 text-text-main/90 rounded-tl-sm glass"
               )}>
-                {msg.content}
+                {!isUser && !msg.isError ? (
+                  <div className="prose prose-sm md:prose-base max-w-none dark:prose-invert prose-p:leading-relaxed prose-pre:bg-surface-elevated prose-pre:border prose-pre:border-border prose-headings:text-text-main prose-strong:text-text-main prose-a:text-primary">
+                    <ReactMarkdown>{msg.content}</ReactMarkdown>
+                  </div>
+                ) : (
+                  msg.content
+                )}
               </div>
             </div>
           )

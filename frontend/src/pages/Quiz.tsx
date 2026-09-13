@@ -4,6 +4,7 @@ import { X, CheckCircle2, XCircle, ArrowRight, Loader2, AlertCircle } from 'luci
 import { startQuiz, submitQuizAnswer } from '../lib/api/quizzes'
 import type { QuizQuestion, QuizSubmitResponse } from '../lib/api/quizzes'
 import { Button } from '../components/ui/button'
+import ReactMarkdown from 'react-markdown'
 import { Progress } from '../components/ui/progress'
 import { cn } from '../lib/utils'
 
@@ -188,9 +189,9 @@ export default function Quiz() {
               <h3 className="font-semibold text-lg flex items-center mb-2">
                 {isCorrect ? <><CheckCircle2 className="mr-2 w-5 h-5" /> Correct</> : <><XCircle className="mr-2 w-5 h-5" /> Incorrect</>}
               </h3>
-              <p className="text-text-main/80 leading-relaxed">
-                {submitResult.ai_explanation}
-              </p>
+              <div className="prose prose-sm md:prose-base max-w-none prose-p:leading-relaxed prose-pre:bg-black/20 prose-pre:border prose-pre:border-black/10 prose-headings:text-current prose-strong:text-current prose-a:text-current">
+                <ReactMarkdown>{submitResult.ai_explanation}</ReactMarkdown>
+              </div>
             </div>
           )}
         </div>
