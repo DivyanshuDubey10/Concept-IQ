@@ -1,0 +1,26 @@
+# Web Framework
+fastapi==0.115.0
+uvicorn[standard]==0.30.6
+
+# Database
+sqlalchemy==2.0.35
+alembic==1.13.3
+psycopg2-binary==2.9.9
+
+# Authentication
+passlib[bcrypt]==1.7.4
+python-jose[cryptography]==3.3.0
+
+# Settings & Environment
+pydantic-settings==2.5.2
+python-dotenv==1.0.1
+pydantic[email]==2.9.2
+
+# AI / LLM (teammate's services)
+openai==1.51.0
+
+# ML (teammate's services)
+scikit-learn==1.5.2
+pandas==2.2.3
+joblib==1.4.2
+numpy==2.1.1
