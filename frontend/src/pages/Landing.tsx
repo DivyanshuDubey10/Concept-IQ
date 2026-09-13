@@ -31,7 +31,7 @@ export default function Landing() {
   }, [])
 
   return (
-    <div className="min-h-screen bg-background text-text-main">
+    <div className="min-h-screen bg-background text-text-main overflow-x-hidden w-full relative">
       {/* Skip to main content — accessibility */}
       <a
         href="#main-content"

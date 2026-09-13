@@ -298,3 +298,47 @@
 .auth-container.signup-active .auth-overlay-right {
   transform: translateX(20%);
 }
+
+/* ── Mobile Responsiveness for Auth ── */
+@media (max-width: 767px) {
+  .auth-container {
+    min-height: 550px;
+  }
+  .auth-form-container {
+    width: 100%;
+    transition: opacity 0.3s ease;
+  }
+  
+  /* Disable translation animations on mobile */
+  .auth-sign-in,
+  .auth-sign-up,
+  .auth-container.signup-active .auth-sign-in,
+  .auth-container.signup-active .auth-sign-up {
+    transform: none !important;
+    animation: none !important;
+  }
+
+  /* When showing Sign In */
+  .auth-container:not(.signup-active) .auth-sign-in {
+    opacity: 1;
+    pointer-events: auto;
+    z-index: 5;
+  }
+  .auth-container:not(.signup-active) .auth-sign-up {
+    opacity: 0;
+    pointer-events: none;
+    z-index: 1;
+  }
+
+  /* When showing Sign Up */
+  .auth-container.signup-active .auth-sign-in {
+    opacity: 0;
+    pointer-events: none;
+    z-index: 1;
+  }
+  .auth-container.signup-active .auth-sign-up {
+    opacity: 1;
+    pointer-events: auto;
+    z-index: 5;
+  }
+}
