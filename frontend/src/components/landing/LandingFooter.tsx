@@ -41,9 +41,9 @@ export function LandingFooter() {
   return (
     <footer className="border-t border-border/40 bg-surface/30" role="contentinfo">
       <div className="max-w-6xl mx-auto px-5 md:px-8 py-12 md:py-16">
-        <Reveal className="grid grid-cols-1 md:grid-cols-3 gap-10">
+        <Reveal className="grid grid-cols-2 md:grid-cols-5 gap-x-6 gap-y-10">
           {/* Brand */}
-          <div className="md:col-span-1">
+          <div className="col-span-2 md:col-span-2">
             <div className="flex items-center gap-2.5 mb-3">
               <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-primary to-purple-500 flex items-center justify-center shadow-glow-primary">
                 <BrainCircuit className="w-4.5 h-4.5 text-primary-foreground" strokeWidth={2.5} />
@@ -57,7 +57,7 @@ export function LandingFooter() {
 
           {/* Link columns */}
           {footerLinks.map((col) => (
-            <div key={col.heading}>
+            <div key={col.heading} className="col-span-1 md:col-span-1">
               <p className="text-xs font-semibold uppercase tracking-widest text-text-muted mb-4">{col.heading}</p>
               <ul className="space-y-2.5" role="list">
                 {col.items.map((item) => (
