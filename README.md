@@ -70,5 +70,6 @@ We approach this hackathon with a production mindset. Please explore the `docs/`
 ## The Team
 
 Built by a 2-person development team with strictly defined architectural responsibilities:
-*   **Developer 1:** Frontend Experience & Application API Layer
-*   **Developer 2:** Adaptive Engine, Mastery Algorithms, & AI/ML Integration
+
+*   **Developer 1 (Full Stack & Database):** Architected the React application, implemented the premium Tailwind CSS design system, built the Python/FastAPI backend, designed the PostgreSQL database schema, and integrated the complete application API layer.
+*   **Developer 2 (AI Engine & Algorithms):** Engineered the adaptive learning engine algorithms, handled the complex LLM API integration and prompt engineering, and developed the automated spaced repetition and mastery tracking logic.
