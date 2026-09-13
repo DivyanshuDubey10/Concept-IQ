@@ -16,11 +16,13 @@ interface Message {
 export default function AITutor() {
   const { user } = useAuth()
   
-  // Sidebar / Session State
   const [sessions, setSessions] = useState<ChatSession[]>([])
   const [activeSessionId, setActiveSessionId] = useState<number | null>(null)
   const [isSidebarOpen, setIsSidebarOpen] = useState(false)
   const [isLoadingSessions, setIsLoadingSessions] = useState(true)
+  const [sessionMenuId, setSessionMenuId] = useState<number | null>(null)
+  const [editingSessionId, setEditingSessionId] = useState<number | null>(null)
+  const [editTitleValue, setEditTitleValue] = useState('')
 
   // Chat State
   const [messages, setMessages] = useState<Message[]>([])
@@ -139,8 +141,24 @@ export default function AITutor() {
   }
 
   const handleSelectSession = (id: number) => {
+    if (editingSessionId === id) return // Don't select if currently editing
     setActiveSessionId(id)
     if (window.innerWidth < 768) setIsSidebarOpen(false)
+  }
+
+  const handleStartRename = (e: React.MouseEvent, session: ChatSession) => {
+    e.stopPropagation()
+    setEditingSessionId(session.id)
+    setEditTitleValue(session.title)
+    setSessionMenuId(null)
+  }
+
+  const handleSaveRename = (e?: React.MouseEvent | React.KeyboardEvent) => {
+    e?.stopPropagation()
+    if (editingSessionId && editTitleValue.trim()) {
+      setSessions(prev => prev.map(s => s.id === editingSessionId ? { ...s, title: editTitleValue.trim() } : s))
+    }
+    setEditingSessionId(null)
   }
 
   const handleSend = async () => {
@@ -246,23 +264,59 @@ export default function AITutor() {
                 key={session.id}
                 onClick={() => handleSelectSession(session.id)}
                 className={cn(
-                  "group flex items-center justify-between px-3 py-2.5 rounded-lg cursor-pointer transition-colors text-sm",
+                  "group relative flex items-center justify-between px-3 py-2.5 rounded-lg cursor-pointer transition-colors text-sm",
                   activeSessionId === session.id 
                     ? "bg-primary/20 text-text-main" 
                     : "text-text-muted hover:bg-surface-elevated hover:text-text-main"
                 )}
               >
-                <div className="flex items-center gap-3 overflow-hidden">
-                  <MessageSquare className="w-4 h-4 shrink-0 opacity-70" />
-                  <span className="truncate">{session.title}</span>
-                </div>
-                <button 
-                  onClick={(e) => handleDeleteSession(e, session.id)}
-                  className="opacity-0 group-hover:opacity-100 p-1 text-text-muted hover:text-error transition-opacity"
-                  title="Delete Chat"
-                >
-                  <Trash2 className="w-4 h-4" />
-                </button>
+                {editingSessionId === session.id ? (
+                  <input
+                    autoFocus
+                    value={editTitleValue}
+                    onChange={(e) => setEditTitleValue(e.target.value)}
+                    onBlur={() => handleSaveRename()}
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter') handleSaveRename(e)
+                      if (e.key === 'Escape') setEditingSessionId(null)
+                    }}
+                    onClick={e => e.stopPropagation()}
+                    className="w-full bg-surface border border-primary/50 rounded px-2 py-1 text-text-main focus:outline-none text-sm"
+                  />
+                ) : (
+                  <>
+                    <div className="flex items-center gap-3 overflow-hidden pr-6">
+                      <MessageSquare className="w-4 h-4 shrink-0 opacity-70" />
+                      <span className="truncate">{session.title}</span>
+                    </div>
+                    
+                    <div className={cn(
+                      "absolute right-2 md:opacity-0 group-hover:opacity-100 transition-opacity",
+                      sessionMenuId === session.id && "opacity-100"
+                    )}>
+                      <button 
+                        onClick={(e) => { e.stopPropagation(); setSessionMenuId(sessionMenuId === session.id ? null : session.id); }}
+                        className="p-1 rounded-md text-text-muted hover:text-text-main hover:bg-surface-elevated transition-colors"
+                      >
+                        <MoreHorizontal className="w-4 h-4" />
+                      </button>
+                      
+                      {sessionMenuId === session.id && (
+                        <div 
+                          className="absolute top-full right-0 mt-1 w-32 bg-surface border border-border/50 rounded-xl shadow-xl py-1 z-50 flex flex-col overflow-hidden animate-in fade-in zoom-in duration-200"
+                          onClick={e => e.stopPropagation()}
+                        >
+                          <button onClick={(e) => handleStartRename(e, session)} className="w-full flex items-center gap-2 px-3 py-2 text-xs text-text-main hover:bg-surface-elevated transition-colors text-left">
+                            <Edit2 className="w-3.5 h-3.5" /> Rename
+                          </button>
+                          <button onClick={(e) => { setSessionMenuId(null); handleDeleteSession(e, session.id); }} className="w-full flex items-center gap-2 px-3 py-2 text-xs text-error hover:bg-error/10 transition-colors text-left">
+                            <Trash className="w-3.5 h-3.5" /> Delete
+                          </button>
+                        </div>
+                      )}
+                    </div>
+                  </>
+                )}
               </div>
             ))
           )}
