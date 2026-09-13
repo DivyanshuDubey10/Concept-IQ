@@ -26,9 +26,13 @@ def get_progress(
     topics = db.query(Topic).all()
     result = []
 
+    total_mastery = 0.0
+    topic_count = 0
+
     for topic in topics:
         concepts = db.query(Concept).filter(Concept.topic_id == topic.id).all()
         concept_out_list = []
+        topic_total_mastery = 0.0
 
         for concept in concepts:
             mastery_row = (
@@ -40,14 +44,24 @@ def get_progress(
                 .first()
             )
             mastery_pct = round(mastery_row.mastery_percentage, 1) if mastery_row else 0.0
+            topic_total_mastery += mastery_pct
             concept_out_list.append(
                 ProgressConceptOut(name=concept.name, mastery=mastery_pct)
             )
 
         if concept_out_list:
-            result.append(ProgressTopicOut(topic_name=topic.name, concepts=concept_out_list))
+            topic_mastery = round(topic_total_mastery / len(concept_out_list), 1)
+            total_mastery += topic_mastery
+            topic_count += 1
+            result.append(ProgressTopicOut(
+                topic_id=topic.id,
+                topic_name=topic.name,
+                mastery=topic_mastery,
+                concepts=concept_out_list
+            ))
 
-    return ProgressResponse(topics=result)
+    overall_mastery = round(total_mastery / topic_count, 1) if topic_count > 0 else 0.0
+    return ProgressResponse(overall_mastery=overall_mastery, topics=result)
 
 
 @router.get("/history", response_model=list[ProgressHistoryItem])

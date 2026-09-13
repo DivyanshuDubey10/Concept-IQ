@@ -7,11 +7,14 @@ class ProgressConceptOut(BaseModel):
 
 
 class ProgressTopicOut(BaseModel):
+    topic_id: int
     topic_name: str
+    mastery: float
     concepts: list[ProgressConceptOut]
 
 
 class ProgressResponse(BaseModel):
+    overall_mastery: float
     topics: list[ProgressTopicOut]
 
 

@@ -6,11 +6,14 @@ export interface ProgressConcept {
 }
 
 export interface ProgressTopic {
+  topic_id: number
   topic_name: string
+  mastery: number
   concepts: ProgressConcept[]
 }
 
-export interface ProgressResponse {
+export interface UserProgress {
+  overall_mastery: number
   topics: ProgressTopic[]
 }
 
@@ -20,8 +23,8 @@ export interface ProgressHistoryItem {
   mastery: number
 }
 
-export async function getProgress(): Promise<ProgressResponse> {
-  const response = await api.get<ProgressResponse>('/api/progress')
+export async function getProgress(): Promise<UserProgress> {
+  const response = await api.get<UserProgress>('/api/progress')
   return response.data
 }
 
