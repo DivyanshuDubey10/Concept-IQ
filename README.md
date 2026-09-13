@@ -30,6 +30,14 @@ Instead of generating a generic "60% score" on a broad quiz, ConceptIQ breaks to
 *   **Database:** SQLite
 *   **Experimental ML (Future Scope):** `scikit-learn`
 
+## Recent Updates (Development Log)
+
+We are rapidly iterating towards our MVP. Recent major features include:
+*   **Authentication & Security:** Implemented secure JWT-based login, signup, and a new "Change Password" flow.
+*   **Apple-Grade UI/UX:** Completely overhauled the design system with semantic variables to support dynamic **Day / Night (Light / Dark) Modes**, complete with smooth transitions, premium glassmorphism, and high-contrast accessibility.
+*   **Interactive Components:** Added a global settings page, a secure animated logout portal modal, and a user profile dropdown.
+*   **Dashboard Integration:** Refactored the dashboard and learning pathways to successfully match the backend's `topics` schema.
+
 ## Comprehensive Documentation
 
 We approach this hackathon with a production mindset. Please explore the `docs/` directory for detailed, implementation-oriented technical specifications:
