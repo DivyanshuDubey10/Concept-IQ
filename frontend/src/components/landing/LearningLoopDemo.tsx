@@ -49,8 +49,10 @@ function Fade({ visible, children, className }: { visible: boolean; children: Re
   return (
     <div
       className={cn(
-        'transition-all duration-500',
-        visible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-3 pointer-events-none absolute inset-0',
+        'transition-all duration-500 w-full',
+        visible
+          ? 'opacity-100 translate-y-0 relative'
+          : 'opacity-0 translate-y-3 absolute inset-0 pointer-events-none',
         className
       )}
     >

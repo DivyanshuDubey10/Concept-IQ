@@ -1,4 +1,4 @@
-import { cn } from '../../lib/utils'
+
 
 const steps = [
   {
@@ -56,64 +56,21 @@ export function HowItWorksSection() {
           </p>
         </div>
 
-        {/* Steps — vertical timeline on mobile, two-column grid on desktop */}
-        <div className="relative">
-          {/* Connecting line (desktop only) */}
-          <div
-            className="hidden md:block absolute left-[calc(50%-0.5px)] top-0 bottom-0 w-px bg-gradient-to-b from-border/0 via-border/60 to-border/0"
-            aria-hidden="true"
-          />
-
-          <div className="space-y-0">
-            {steps.map((step, i) => {
-              const isLeft = i % 2 === 0
-              return (
-                <div
-                  key={step.number}
-                  className={cn(
-                    'relative grid md:grid-cols-2 gap-0 md:gap-12 items-center',
-                    'pb-10 md:pb-0'
-                  )}
-                >
-                  {/* Left content (even indices on desktop) */}
-                  <div
-                    className={cn(
-                      'md:py-8',
-                      isLeft ? 'md:text-right md:pr-8' : 'md:order-2 md:text-left md:pl-8'
-                    )}
-                  >
-                    <div
-                      className={cn(
-                        'flex items-center gap-3 mb-2',
-                        isLeft ? 'md:justify-end' : 'md:justify-start'
-                      )}
-                    >
-                      <span className="text-4xl md:text-5xl font-bold text-text-main/8 tabular-nums leading-none">
-                        {step.number}
-                      </span>
-                      <h3 className="text-xl font-semibold text-text-main !mb-0">{step.title}</h3>
-                    </div>
-                    <p className="text-text-muted text-sm leading-relaxed max-w-xs !mb-0 md:ml-auto md:mr-0">
-                      {step.description}
-                    </p>
-                  </div>
-
-                  {/* Centre dot (desktop) */}
-                  <div
-                    className={cn(
-                      'hidden md:flex absolute left-1/2 -translate-x-1/2 items-center justify-center',
-                      'w-3 h-3 rounded-full bg-background border-2 border-primary z-10'
-                    )}
-                    style={{ top: '50%', transform: 'translate(-50%, -50%)' }}
-                    aria-hidden="true"
-                  />
-
-                  {/* Placeholder for the other column */}
-                  <div className={cn('hidden md:block', isLeft ? 'md:order-2' : '')} />
-                </div>
-              )
-            })}
-          </div>
+        {/* Steps — clean numbered list */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-x-16 gap-y-10">
+          {steps.map((step) => (
+            <div key={step.number} className="flex gap-5">
+              <div className="shrink-0 pt-1">
+                <span className="text-3xl font-bold text-text-main/12 tabular-nums leading-none">
+                  {step.number}
+                </span>
+              </div>
+              <div>
+                <h3 className="text-lg font-semibold text-text-main !mb-1.5">{step.title}</h3>
+                <p className="text-sm text-text-muted leading-relaxed !mb-0">{step.description}</p>
+              </div>
+            </div>
+          ))}
         </div>
       </div>
     </section>
