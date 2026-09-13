@@ -3,6 +3,7 @@ from backend.app.models.topic import Topic, Concept
 from backend.app.models.question import Question
 from backend.app.models.quiz import Quiz, QuizSession
 from backend.app.models.mastery import UserConceptMastery
+from backend.app.models.chat import ChatSession, ChatMessage
 
 __all__ = [
     "User",
@@ -12,4 +13,6 @@ __all__ = [
     "Quiz",
     "QuizSession",
     "UserConceptMastery",
+    "ChatSession",
+    "ChatMessage",
 ]
