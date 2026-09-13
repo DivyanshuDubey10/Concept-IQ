@@ -22,7 +22,7 @@ export function DesktopNav() {
         {/* Logo */}
         <div
           className="flex items-center gap-2.5 cursor-pointer select-none"
-          onClick={() => navigate('/')}
+          onClick={() => navigate('/home')}
         >
           <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-primary to-purple-500 flex items-center justify-center shadow-glow-primary shrink-0">
             <BrainCircuit className="w-4.5 h-4.5 text-text-main" strokeWidth={2.5} />

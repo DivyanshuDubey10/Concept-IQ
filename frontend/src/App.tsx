@@ -1,5 +1,6 @@
 import { Routes, Route, Navigate } from 'react-router-dom'
 import { Shell } from './components/layout/Shell'
+import Landing from './pages/Landing'
 import Home from './pages/Home'
 import Learn from './pages/Learn'
 import Practice from './pages/Practice'
@@ -36,8 +37,15 @@ function ProtectedRoute({ children }: { children: React.ReactNode }) {
 function App() {
   return (
     <Routes>
+      {/* Public routes */}
+      <Route path="/" element={<Landing />} />
+      <Route path="/login" element={<Auth />} />
+      <Route path="/signup" element={<Auth />} />
+      <Route path="/forgot-password" element={<ForgotPassword />} />
+
+      {/* Authenticated routes */}
       <Route element={<ProtectedRoute><Shell /></ProtectedRoute>}>
-        <Route path="/" element={<Home />} />
+        <Route path="/home" element={<Home />} />
         <Route path="/learn" element={<Learn />} />
         <Route path="/topic/:topicId" element={<TopicDetail />} />
         <Route path="/analysis/:topicId" element={<ConceptAnalysis />} />
@@ -48,9 +56,6 @@ function App() {
       </Route>
       <Route path="/quiz/:quizId" element={<ProtectedRoute><Quiz /></ProtectedRoute>} />
       <Route path="/practice" element={<ProtectedRoute><Practice /></ProtectedRoute>} />
-      <Route path="/login" element={<Auth />} />
-      <Route path="/signup" element={<Auth />} />
-      <Route path="/forgot-password" element={<ForgotPassword />} />
     </Routes>
   )
 }

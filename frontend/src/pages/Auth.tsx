@@ -50,7 +50,7 @@ export default function Auth() {
       const res = await login(loginEmail, loginPassword)
       localStorage.setItem('conceptiq_token', res.access_token)
       setLoginStatus('success')
-      setTimeout(() => { window.location.href = '/' }, 700)
+      setTimeout(() => { window.location.href = '/home' }, 700)
     } catch (err: any) {
       setLoginStatus('error')
       setLoginError(err?.response?.data?.detail || err.message || 'Incorrect email or password')
@@ -77,7 +77,7 @@ export default function Auth() {
       const res = await register(signupName, signupEmail, signupPwd)
       localStorage.setItem('conceptiq_token', res.access_token)
       setSignupStatus('success')
-      setTimeout(() => { window.location.href = '/' }, 700)
+      setTimeout(() => { window.location.href = '/home' }, 700)
     } catch (err: any) {
       setSignupStatus('error')
       setSignupError(err?.response?.data?.detail || err.message || 'Registration failed. Please try again.')
