@@ -1,12 +1,14 @@
 import { useState, useRef, useEffect } from 'react'
-import { Send, BrainCircuit, User, Sparkles, Bot } from 'lucide-react'
+import { Send, BrainCircuit, User, Sparkles, Bot, AlertCircle } from 'lucide-react'
 import { useAuth } from '../lib/contexts/AuthContext'
 import { cn } from '../lib/utils'
+import { sendChatMessage, type ChatMessage } from '../lib/api/tutor'
 
 interface Message {
   id: string
   role: 'user' | 'assistant'
   content: string
+  isError?: boolean
 }
 
 export default function AITutor() {
@@ -30,23 +32,48 @@ export default function AITutor() {
   const handleSend = async () => {
     if (!input.trim()) return
 
-    const userMsg: Message = { id: Date.now().toString(), role: 'user', content: input.trim() }
+    const userText = input.trim()
+    const userMsg: Message = { id: Date.now().toString(), role: 'user', content: userText }
+    
+    // Add user message to UI immediately
     setMessages(prev => [...prev, userMsg])
     setInput('')
     setIsTyping(true)
 
-    // Simulate network delay / AI generation
-    setTimeout(() => {
-      setIsTyping(false)
+    try {
+      // Build the chat history payload (strip out internal UI fields like id and isError)
+      const historyPayload: ChatMessage[] = messages
+        .filter(m => !m.isError)
+        .map(m => ({ role: m.role, content: m.content }));
+      
+      // Append the new user message
+      historyPayload.push({ role: 'user', content: userText });
+
+      // Call the backend API
+      const response = await sendChatMessage(historyPayload);
+
       setMessages(prev => [
         ...prev,
         {
           id: (Date.now() + 1).toString(),
           role: 'assistant',
-          content: "I'm currently running in demonstration mode. In a full production environment, this would connect to the NVIDIA NIM API to provide deep, concept-aware tutoring based on your specific curriculum and mastery data."
+          content: response.reply
         }
       ])
-    }, 1500)
+    } catch (error: any) {
+      console.error('AI Tutor Error:', error);
+      setMessages(prev => [
+        ...prev,
+        {
+          id: (Date.now() + 1).toString(),
+          role: 'assistant',
+          content: 'Sorry, I am having trouble connecting right now. Please try again later.',
+          isError: true
+        }
+      ])
+    } finally {
+      setIsTyping(false)
+    }
   }
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
@@ -87,15 +114,17 @@ export default function AITutor() {
             >
               <div className={cn(
                 "w-8 h-8 rounded-full flex items-center justify-center shrink-0 mt-1 shadow-sm",
-                isUser ? "bg-surface border border-text-main/10" : "bg-gradient-to-br from-primary/20 to-purple-500/20 border border-primary/20 text-primary"
+                isUser ? "bg-surface border border-text-main/10" : msg.isError ? "bg-red-500/20 border border-red-500/20 text-red-500" : "bg-gradient-to-br from-primary/20 to-purple-500/20 border border-primary/20 text-primary"
               )}>
-                {isUser ? <User className="w-4 h-4 text-text-muted" /> : <Bot className="w-4 h-4" />}
+                {isUser ? <User className="w-4 h-4 text-text-muted" /> : msg.isError ? <AlertCircle className="w-4 h-4" /> : <Bot className="w-4 h-4" />}
               </div>
               
               <div className={cn(
                 "px-5 py-4 rounded-[24px] text-[15px] leading-relaxed relative",
                 isUser 
                   ? "bg-primary text-text-main rounded-tr-sm shadow-nav-pill" 
+                  : msg.isError
+                  ? "bg-red-500/10 border border-red-500/20 text-red-400 rounded-tl-sm glass"
                   : "bg-surface/50 border border-text-main/5 text-text-main/90 rounded-tl-sm glass"
               )}>
                 {msg.content}

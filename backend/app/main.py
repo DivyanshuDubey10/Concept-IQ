@@ -16,7 +16,7 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from backend.app.core.config import settings
 from backend.app.database import Base, engine
-from backend.app.routers import auth, users, topics, quizzes, progress, revision
+from backend.app.routers import auth, users, topics, quizzes, progress, revision, tutor
 
 app = FastAPI(
     title="ConceptIQ API",
@@ -52,6 +52,7 @@ app.include_router(topics.router)
 app.include_router(quizzes.router)
 app.include_router(progress.router)
 app.include_router(revision.router)
+app.include_router(tutor.router)
 
 
 # ---------------------------------------------------------------------------
