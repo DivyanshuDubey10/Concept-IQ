@@ -31,11 +31,14 @@ export default function AITutor() {
   const [openMenuId, setOpenMenuId] = useState<string | null>(null)
   const bottomRef = useRef<HTMLDivElement>(null)
 
-  // Close menu on outside click
+  // Close menus on outside click
   useEffect(() => {
-    const closeMenu = () => setOpenMenuId(null)
-    window.addEventListener('click', closeMenu)
-    return () => window.removeEventListener('click', closeMenu)
+    const closeMenus = () => {
+      setOpenMenuId(null)
+      setSessionMenuId(null)
+    }
+    window.addEventListener('click', closeMenus)
+    return () => window.removeEventListener('click', closeMenus)
   }, [])
 
   const handleCopyMessage = (content: string) => {
@@ -291,26 +294,28 @@ export default function AITutor() {
                     </div>
                     
                     <div className={cn(
-                      "absolute right-2 md:opacity-0 group-hover:opacity-100 transition-opacity",
-                      sessionMenuId === session.id && "opacity-100"
+                      "absolute right-2 transition-opacity",
+                      "opacity-100 md:opacity-0 md:group-hover:opacity-100",
+                      sessionMenuId === session.id && "!opacity-100"
                     )}>
                       <button 
                         onClick={(e) => { e.stopPropagation(); setSessionMenuId(sessionMenuId === session.id ? null : session.id); }}
-                        className="p-1 rounded-md text-text-muted hover:text-text-main hover:bg-surface-elevated transition-colors"
+                        className="p-1.5 rounded-md text-text-muted hover:text-text-main hover:bg-surface-elevated transition-colors"
                       >
                         <MoreHorizontal className="w-4 h-4" />
                       </button>
                       
                       {sessionMenuId === session.id && (
                         <div 
-                          className="absolute top-full right-0 mt-1 w-32 bg-surface border border-border/50 rounded-xl shadow-xl py-1 z-50 flex flex-col overflow-hidden animate-in fade-in zoom-in duration-200"
+                          className="absolute top-full right-0 mt-1 w-36 bg-surface border border-border/50 rounded-xl shadow-xl py-1 z-50 flex flex-col overflow-hidden"
                           onClick={e => e.stopPropagation()}
                         >
-                          <button onClick={(e) => handleStartRename(e, session)} className="w-full flex items-center gap-2 px-3 py-2 text-xs text-text-main hover:bg-surface-elevated transition-colors text-left">
-                            <Edit2 className="w-3.5 h-3.5" /> Rename
+                          <button onClick={(e) => handleStartRename(e, session)} className="w-full flex items-center gap-2.5 px-3 py-2.5 text-sm text-text-main hover:bg-surface-elevated transition-colors text-left">
+                            <Edit2 className="w-3.5 h-3.5 shrink-0" /> Rename
                           </button>
-                          <button onClick={(e) => { setSessionMenuId(null); handleDeleteSession(e, session.id); }} className="w-full flex items-center gap-2 px-3 py-2 text-xs text-error hover:bg-error/10 transition-colors text-left">
-                            <Trash className="w-3.5 h-3.5" /> Delete
+                          <div className="h-px bg-border/40 mx-2" />
+                          <button onClick={(e) => { setSessionMenuId(null); handleDeleteSession(e, session.id); }} className="w-full flex items-center gap-2.5 px-3 py-2.5 text-sm text-error hover:bg-error/10 transition-colors text-left">
+                            <Trash className="w-3.5 h-3.5 shrink-0" /> Delete
                           </button>
                         </div>
                       )}
