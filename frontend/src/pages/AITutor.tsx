@@ -23,6 +23,7 @@ export default function AITutor() {
   const [sessionMenuId, setSessionMenuId] = useState<number | null>(null)
   const [editingSessionId, setEditingSessionId] = useState<number | null>(null)
   const [editTitleValue, setEditTitleValue] = useState('')
+  const [deleteConfirmId, setDeleteConfirmId] = useState<number | null>(null)
 
   // Chat State
   const [messages, setMessages] = useState<Message[]>([])
@@ -129,17 +130,24 @@ export default function AITutor() {
     if (window.innerWidth < 768) setIsSidebarOpen(false)
   }
 
-  const handleDeleteSession = async (e: React.MouseEvent, id: number) => {
+  const handleDeleteSession = (e: React.MouseEvent, id: number) => {
     e.stopPropagation()
-    if (!confirm("Are you sure you want to delete this chat?")) return
+    setSessionMenuId(null)
+    setDeleteConfirmId(id)
+  }
+
+  const confirmDelete = async () => {
+    if (deleteConfirmId === null) return
     try {
-      await deleteChatSession(id)
-      setSessions(prev => prev.filter(s => s.id !== id))
-      if (activeSessionId === id) {
+      await deleteChatSession(deleteConfirmId)
+      setSessions(prev => prev.filter(s => s.id !== deleteConfirmId))
+      if (activeSessionId === deleteConfirmId) {
         handleNewChat()
       }
     } catch (err) {
       console.error("Failed to delete session", err)
+    } finally {
+      setDeleteConfirmId(null)
     }
   }
 
@@ -228,7 +236,46 @@ export default function AITutor() {
 
   return (
     <div className="h-[calc(100vh-6rem)] md:h-[calc(100vh-4rem)] flex overflow-hidden bg-background relative">
-      
+
+      {/* Delete Confirmation Modal */}
+      {deleteConfirmId !== null && (
+        <div
+          className="fixed inset-0 z-[100] flex items-center justify-center bg-black/60 backdrop-blur-sm"
+          onClick={() => setDeleteConfirmId(null)}
+        >
+          <div
+            className="bg-surface border border-border/60 rounded-2xl shadow-2xl p-6 w-[calc(100%-2rem)] max-w-sm mx-auto"
+            onClick={e => e.stopPropagation()}
+          >
+            <div className="flex items-center gap-3 mb-3">
+              <div className="w-10 h-10 rounded-full bg-error/15 flex items-center justify-center shrink-0">
+                <Trash className="w-5 h-5 text-error" />
+              </div>
+              <div>
+                <h3 className="font-semibold text-text-main text-[15px]">Delete chat?</h3>
+                <p className="text-xs text-text-muted mt-0.5">
+                  {sessions.find(s => s.id === deleteConfirmId)?.title ?? 'This chat'} will be permanently removed.
+                </p>
+              </div>
+            </div>
+            <div className="flex gap-2 mt-5">
+              <button
+                onClick={() => setDeleteConfirmId(null)}
+                className="flex-1 px-4 py-2.5 rounded-xl text-sm font-medium bg-surface-elevated hover:bg-border/50 text-text-main transition-colors"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={confirmDelete}
+                className="flex-1 px-4 py-2.5 rounded-xl text-sm font-medium bg-error hover:bg-error/80 text-white transition-colors"
+              >
+                Delete
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Mobile Sidebar Overlay */}
       {isSidebarOpen && (
         <div 
