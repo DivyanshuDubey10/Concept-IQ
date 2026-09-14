@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from 'react'
-import { Send, BrainCircuit, User, Sparkles, Bot, AlertCircle, Plus, MessageSquare, Trash2, Menu, X, MoreHorizontal, Copy, Edit2, Trash } from 'lucide-react'
+import { Send, BrainCircuit, User, Sparkles, Bot, AlertCircle, Plus, MessageSquare, Menu, X, MoreHorizontal, Copy, Edit2, Trash } from 'lucide-react'
 import { useAuth } from '../lib/contexts/AuthContext'
 import { cn } from '../lib/utils'
 import { sendChatMessage, getChatSessions, getChatMessages, deleteChatSession, type ChatMessage, type ChatSession } from '../lib/api/tutor'
