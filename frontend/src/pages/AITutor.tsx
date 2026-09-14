@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from 'react'
-import { Send, BrainCircuit, User, Sparkles, Bot, AlertCircle, Plus, MessageSquare, Menu, X, MoreHorizontal, Copy, Edit2, Trash } from 'lucide-react'
+import { Send, User, Sparkles, Bot, AlertCircle, Plus, MessageSquare, Menu, X, MoreHorizontal, Copy, Edit2, Trash } from 'lucide-react'
 import { useAuth } from '../lib/contexts/AuthContext'
 import { cn } from '../lib/utils'
 import { sendChatMessage, getChatSessions, getChatMessages, deleteChatSession, type ChatMessage, type ChatSession } from '../lib/api/tutor'
@@ -387,16 +387,9 @@ export default function AITutor() {
             <Menu className="w-6 h-6" />
           </button>
 
-          <div className="w-10 h-10 md:w-12 md:h-12 rounded-2xl bg-gradient-to-br from-primary to-purple-500 flex items-center justify-center shadow-glow-primary shrink-0 relative">
-            <BrainCircuit className="w-5 h-5 md:w-6 md:h-6 text-text-main" />
-            <div className="absolute -bottom-1 -right-1 w-3.5 h-3.5 bg-success rounded-full border-2 border-background" />
-          </div>
-          <div>
-            <h1 className="text-lg md:text-2xl font-bold text-text-main tracking-tight flex items-center gap-2">
-              ConceptIQ Tutor <Sparkles className="w-4 h-4 text-primary" />
-            </h1>
-            <p className="text-xs md:text-sm text-text-muted">Powered by AI · Always online</p>
-          </div>
+          <h1 className="text-xl md:text-2xl font-bold text-text-main tracking-tight flex items-center gap-2">
+            ConceptIQ Tutor <Sparkles className="w-4 h-4 text-primary" />
+          </h1>
         </div>
 
         {/* Chat Messages */}
