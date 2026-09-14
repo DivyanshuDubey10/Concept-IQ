@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from 'react'
-import { Send, User, Sparkles, Bot, AlertCircle, Plus, MessageSquare, Menu, X, MoreHorizontal, Copy, Edit2, Trash } from 'lucide-react'
+import { Send, BrainCircuit, Sparkles, Plus, MessageSquare, Menu, X, MoreHorizontal, Copy, Edit2, Trash } from 'lucide-react'
 import { useAuth } from '../lib/contexts/AuthContext'
 import { cn } from '../lib/utils'
 import { sendChatMessage, getChatSessions, getChatMessages, deleteChatSession, type ChatMessage, type ChatSession } from '../lib/api/tutor'
@@ -387,6 +387,10 @@ export default function AITutor() {
             <Menu className="w-6 h-6" />
           </button>
 
+          <div className="w-10 h-10 md:w-12 md:h-12 rounded-2xl bg-gradient-to-br from-primary to-purple-500 flex items-center justify-center shadow-glow-primary shrink-0 relative">
+            <BrainCircuit className="w-5 h-5 md:w-6 md:h-6 text-white" />
+            <div className="absolute -bottom-1 -right-1 w-3.5 h-3.5 bg-success rounded-full border-2 border-background" />
+          </div>
           <h1 className="text-xl md:text-2xl font-bold text-text-main tracking-tight flex items-center gap-2">
             ConceptIQ Tutor <Sparkles className="w-4 h-4 text-primary" />
           </h1>
@@ -405,13 +409,8 @@ export default function AITutor() {
                     isUser ? "ml-auto flex-row-reverse" : "mr-auto"
                   )}
                 >
-                  <div className={cn(
-                    "w-8 h-8 rounded-full flex items-center justify-center shrink-0 mt-1 shadow-sm",
-                    isUser ? "bg-surface border border-text-main/10" : msg.isError ? "bg-red-500/20 border border-red-500/20 text-red-500" : "bg-gradient-to-br from-primary/20 to-purple-500/20 border border-primary/20 text-primary"
-                  )}>
-                    {isUser ? <User className="w-4 h-4 text-text-muted" /> : msg.isError ? <AlertCircle className="w-4 h-4" /> : <Bot className="w-4 h-4" />}
-                  </div>
-                  
+
+
                   <div className={cn(
                     "px-4 md:px-5 py-3 md:py-4 rounded-[24px] text-[14px] md:text-[15px] leading-relaxed relative group/msg transition-all",
                     isUser 
@@ -475,10 +474,7 @@ export default function AITutor() {
             })}
             
             {isTyping && (
-              <div className="flex w-full gap-4 max-w-[85%] mr-auto animate-fade-in">
-                <div className="w-8 h-8 rounded-full bg-gradient-to-br from-primary/20 to-purple-500/20 border border-primary/20 text-primary flex items-center justify-center shrink-0 mt-1">
-                  <Bot className="w-4 h-4" />
-                </div>
+              <div className="flex w-full gap-2 max-w-[85%] mr-auto animate-fade-in">
                 <div className="px-5 py-4 rounded-[24px] rounded-tl-sm bg-surface/50 border border-text-main/5 glass flex items-center gap-1.5 h-12 w-20">
                   <span className="w-2 h-2 rounded-full bg-primary/60 animate-bounce-soft" style={{ animationDelay: '0ms' }} />
                   <span className="w-2 h-2 rounded-full bg-primary/60 animate-bounce-soft" style={{ animationDelay: '150ms' }} />
